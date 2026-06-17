@@ -5,6 +5,25 @@
 > aby ukážka pôsobila ako reálna funkcia. Kalendár, e-maily ani dopyt sa reálne
 > neodosielajú.
 
+> **Verzia 3 — profesionálne dotiahnutie a reálny dojem:**
+> - Zo stránky aj asistenta **odstránené upozornenia** typu „demo režim",
+>   „kalendár je fejkový", „žiadne dáta sa neodosielajú". Na stránke ostal len
+>   krátky, nenápadný popisok, čo asistent ukazuje. Pôsobí ako reálne riešenie.
+> - **Logo:** brandový chevron „A" + „i" s **jasne viditeľnou bodkou** — čistejšie
+>   a prémiovejšie. V hlavičke stav **„Asistent je online"**.
+> - **Úvod = akčné čipy ako hlavná funkcia.** Prominentná karta „Potrebujem
+>   konzultáciu" hneď pod úvodom + akčné riadky: *Úradné postupy* (Stavebné
+>   povolenie, Ohlásenie, Kolaudácia, Zmena/prístavba — každé s **postupom krok za
+>   krokom**: čo pripraviť, kam ísť, čo sa podáva, prílohy, čo pripraví Aplan),
+>   *Komunikácia s úradom* (zásady + vzor správy + reakcia na výzvu),
+>   *Aké podklady potrebujem?*, *Mám pozemok/stavbu — čo ďalej?*,
+>   *Preveďte ma tým, čo robíte*.
+> - **Kalendár** zjednodušený a bez emoji: typ stretnutia → dátum/čas → údaje.
+> - **Spodná lišta**: iba rýchle kontakty (Zavolať, E-mail, WhatsApp) kompaktne pod
+>   inputom, ako reálne `tel:`/`mailto:`/`wa.me` odkazy. Kalendár už nie je dole.
+> - **Input** má jemný animovaný placeholder (postupne sa píšu a mažú návrhy otázok).
+> - Väčší, prehľadnejší panel na desktope; na mobile bez rozbíjania.
+>
 > **Verzia 2 — úprava na jednoduchý, profesionálny a dôveryhodný tón:**
 > - **Logo podľa reálnej značky** — Aplan používa minimalistický bronzový „chevron"
 >   (písmeno A bez priečky). Ikonku asistenta tvorí presne tento brandový tvar
