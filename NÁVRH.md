@@ -5,6 +5,23 @@
 > aby ukážka pôsobila ako reálna funkcia. Kalendár, e-maily ani dopyt sa reálne
 > neodosielajú.
 
+> **Verzia 2 — úprava na jednoduchý, profesionálny a dôveryhodný tón:**
+> - **Logo podľa reálnej značky** — Aplan používa minimalistický bronzový „chevron"
+>   (písmeno A bez priečky). Ikonku asistenta tvorí presne tento brandový tvar
+>   doplnený o tenké „I" → prirodzená „AI" verzia loga, nie nové náhodné logo.
+>   Farby naladené na reálny brandový bronz/taupe (žiadne krikľavé tóny).
+> - **Rotujúci zatvárateľný popisok** pri bubline (3 vety o pomoci s úradným
+>   vybavovaním, s malým „×").
+> - **Čisté okno**: jednoduchý header, názov, zatváracie tlačidlo, decentné logo,
+>   bez zbytočných efektov a preplnenia. Pokojnejší launcher (bez „hračkárskeho"
+>   pulzovania).
+> - **Úvodné čipy v sekciách** (kompaktný 2-stĺpcový grid): *Úradné postupy*,
+>   *Dokumenty a komunikácia*, *Nie ste si istí?* — namiesto dlhého zoznamu tlačidiel.
+> - **Krokové vedenie**: po kliknutí na tému asistent najprv krátko vysvetlí, o čo
+>   ide, ponúkne konkrétnejšie čipy a až potom zobrazí jasný postup (kde to riešiť,
+>   čo pripraviť, čo napísať). Žiadne veľké bloky textu naraz.
+> - **Rezervácia konzultácie** ako samostatná karta pod čipmi (nie hlavný čip).
+
 ---
 
 ## 1) Hlavná myšlienka asistenta
