@@ -134,19 +134,23 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .chip.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
 .chip.primary:hover{background:var(--ink-2)}
 
-/* úvodné menu — jeden úhľadný zoznam */
+/* úvodné menu — premiový zoznam */
 .menu{margin:6px 0 12px 0;animation:rise .3s ease both}
-.menu-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper);box-shadow:0 2px 10px rgba(22,24,28,.04)}
-.mrow{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:11px 13px;cursor:pointer;transition:background .15s;font-family:var(--font)}
+.menu-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--paper);box-shadow:0 8px 24px rgba(22,24,28,.07)}
+.mrow{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--paper);padding:13px 15px;cursor:pointer;transition:background .18s;font-family:var(--font)}
 .mrow:last-child{border-bottom:0}
-.mrow:hover{background:var(--accent-soft)}
-.mrow .mi{width:32px;height:32px;border-radius:9px;background:var(--soft);display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:background .15s}
-.mrow:hover .mi{background:#fff}
-.mrow .mi svg{width:16px;height:16px;color:var(--accent-2)}
+.mrow::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transform-origin:center;transition:transform .2s;border-radius:0 3px 3px 0}
+.mrow:hover{background:var(--soft-2)}
+.mrow:hover::before{transform:scaleY(1)}
+.mrow .mi{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:background .18s}
+.mrow:hover .mi{background:var(--accent)}
+.mrow .mi svg{width:17px;height:17px;color:var(--accent-2);transition:color .18s}
+.mrow:hover .mi svg{color:#fff}
 .mrow .mt2{flex:1;min-width:0}
-.mrow .mt2 b{display:block;font:700 13px var(--font);color:var(--ink)}
-.mrow .mt2 span{font:600 10.5px var(--font);color:var(--muted)}
-.mrow .mchev{width:15px;height:15px;color:var(--muted-2);flex:0 0 auto}
+.mrow .mt2 b{display:block;font:700 13.5px var(--font);color:var(--ink);letter-spacing:-.01em}
+.mrow .mt2 span{display:block;font:600 11px var(--font);color:var(--muted);margin-top:1px}
+.mrow .mchev{width:15px;height:15px;color:var(--line-2);flex:0 0 auto;transition:transform .18s,color .18s}
+.mrow:hover .mchev{color:var(--accent-2);transform:translateX(3px)}
 .menu .resv{margin-bottom:11px}
 .resv{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:12px 13px;cursor:pointer;transition:all .15s}
 .resv:hover{border-color:var(--accent);box-shadow:0 6px 18px rgba(22,24,28,.06)}
