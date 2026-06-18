@@ -134,15 +134,15 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .chip.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
 .chip.primary:hover{background:var(--ink-2)}
 
-/* úvodné menu — hlavné akčné riadky */
-.menu{margin:2px 0 16px 39px;animation:rise .3s ease both}
-.mrow{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:12px 13px;margin-bottom:8px;cursor:pointer;transition:all .15s;font-family:var(--font)}
+/* úvodné menu — hlavné akčné riadky (kompaktné) */
+.menu{margin:6px 0 12px 0;animation:rise .3s ease both}
+.mrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:9px 12px;margin-bottom:6px;cursor:pointer;transition:all .15s;font-family:var(--font)}
 .mrow:hover{border-color:var(--accent);background:var(--accent-soft)}
-.mrow>.ic{width:18px;height:18px;color:var(--accent-2);flex:0 0 auto}
+.mrow>.ic{width:17px;height:17px;color:var(--accent-2);flex:0 0 auto}
 .mrow .mt2{flex:1;min-width:0}
-.mrow .mt2 b{display:block;font:800 13px var(--font);color:var(--ink)}
-.mrow .mt2 span{font:600 11px var(--font);color:var(--muted)}
-.mrow>svg:last-child{width:16px;height:16px;color:var(--muted-2);flex:0 0 auto}
+.mrow .mt2 b{display:block;font:700 12.5px var(--font);color:var(--ink)}
+.mrow .mt2 span{font:600 10.5px var(--font);color:var(--muted)}
+.mrow>svg:last-child{width:15px;height:15px;color:var(--muted-2);flex:0 0 auto}
 .menu .resv{margin-bottom:11px}
 .resv{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:12px 13px;cursor:pointer;transition:all .15s}
 .resv:hover{border-color:var(--accent);box-shadow:0 6px 18px rgba(22,24,28,.06)}
@@ -219,13 +219,10 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .cal-month{font:800 14px var(--font);color:var(--ink)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal-dow{font:700 9.5px var(--font);color:var(--muted-2);text-align:center;text-transform:uppercase;padding:2px 0 5px}
-.cal-day{aspect-ratio:1;border:1px solid transparent;border-radius:10px;background:transparent;font:600 12.5px var(--font);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;position:relative}
-.cal-day:hover:not(.off){background:var(--accent-soft)}
-.cal-day.off{color:var(--line-2);cursor:default}
-.cal-day.free{font-weight:800}
-.cal-day.free::after{content:"";position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:var(--accent)}
-.cal-day.on{background:var(--ink);color:#fff}
-.cal-day.on::after{background:#fff}
+.cal-day{aspect-ratio:1;border:1px solid transparent;border-radius:10px;background:transparent;font:600 12.5px var(--font);color:var(--line-2);cursor:default;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.cal-day.free{color:var(--ink);font-weight:700;background:var(--soft);cursor:pointer}
+.cal-day.free:hover{background:var(--accent-soft)}
+.cal-day.on{background:var(--ink);color:#fff;font-weight:800}
 .cal-times{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .cal-time{border:1.5px solid var(--line);border-radius:11px;padding:11px 0;text-align:center;font:700 13px var(--font);color:var(--ink);cursor:pointer;background:var(--paper);transition:all .14s}
 .cal-time:hover{border-color:var(--accent);background:var(--accent-soft)}
@@ -450,15 +447,9 @@ function aiClose(){
   document.body.classList.remove('ai-locked');
 }
 
-/* ——— úvod ——— */
-function welcome(){
-  botMsg('Dobrý deň, som <b>Aplan AI</b>. S čím vám pomôžem?');
-  setTimeout(()=>renderMenu(),340);
-}
-function menu(){
-  botMsg('S čím vám ešte pomôžem?');
-  renderMenu();
-}
+/* ——— úvod: bez uvítacej správy, rovno akčné chipy (návod je v inpute) ——— */
+function welcome(){ renderMenu(); }
+function menu(){ renderMenu(); }
 function renderMenu(){
   const wrap=el('<div class="menu"></div>');
   const rows=[
