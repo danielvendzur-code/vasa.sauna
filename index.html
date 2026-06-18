@@ -332,6 +332,9 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
       <div class="s"><i></i> Asistent je online</div>
     </div>
     <div class="ai-hactions">
+      <button class="hbtn" onclick="aiHome()" aria-label="Hlavné menu" title="Hlavné menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>
+      </button>
       <button class="hbtn" onclick="aiRestart()" aria-label="Začať odznova" title="Začať odznova">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
       </button>
@@ -454,7 +457,8 @@ function aiClose(){
 
 /* ——— úvod: bez uvítacej správy, rovno akčné chipy (návod je v inpute) ——— */
 function welcome(){ renderMenu(); }
-function menu(){ renderMenu(); }
+function menu(){ body.querySelectorAll('.menu').forEach(x=>x.remove()); renderMenu(); }
+function aiHome(){ menu(); }
 function renderMenu(){
   const wrap=el('<div class="menu"></div>');
   const card=el('<div class="menu-card"></div>');
