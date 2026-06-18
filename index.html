@@ -39,6 +39,12 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 /* ============ DEMO PODKLADOVÁ STRÁNKA (mock Aplan) ============ */
 .demo-ribbon{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--soft);color:var(--muted);font:600 11.5px/1.4 var(--font);letter-spacing:.01em;text-align:center;padding:7px 14px;border-bottom:1px solid var(--line)}
 .demo-ribbon b{color:var(--ink);font-weight:700}
+.stage{max-width:560px;margin:0 auto;padding:130px 24px 80px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.stage-logo{display:flex}
+.stage-logo svg{width:56px;height:56px}
+.stage-h{font:900 40px var(--font);letter-spacing:-.02em;margin:6px 0 0}
+.stage-p{font:500 16px/1.6 var(--font);color:var(--muted);max-width:44ch;margin:0}
+@media(max-width:560px){.stage{padding:96px 20px 60px}.stage-h{font-size:32px}.stage-p{font-size:15px}}
 .nav{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(244,244,241,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px}
 .brand #brandmono{display:flex;align-items:center}
@@ -132,7 +138,7 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .chip:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-1px)}
 .chip .ic{width:15px;height:15px;opacity:.7}
 .chip.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
-.chip.primary:hover{background:var(--ink-2)}
+.chip.primary:hover{background:var(--ink);color:var(--accent)}
 
 /* úvodné menu — premiový zoznam */
 .menu{margin:6px 0 12px 0;animation:rise .3s ease both}
@@ -207,7 +213,7 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .field textarea{resize:vertical;min-height:64px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .btn-go{width:100%;background:var(--ink);color:#fff;border:0;border-radius:12px;padding:12px;font:800 14px var(--font);cursor:pointer;margin-top:4px;transition:background .18s}
-.btn-go:hover{background:var(--ink-2)}
+.btn-go:hover{background:var(--ink);color:var(--accent)}
 .btn-ghost{width:100%;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:11px;font:700 13px var(--font);cursor:pointer;margin-top:7px}
 
 /* kalendár */
@@ -263,8 +269,9 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 /* sticky pätička */
 .ai-foot{padding:0 12px 12px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
 .foot-resv{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:0;border-radius:13px;background:var(--ink);color:#fff;padding:13px;font:800 14px var(--font);cursor:pointer;transition:background .18s}
-.foot-resv:hover{background:var(--ink-2)}
+.foot-resv:hover{background:var(--ink);color:var(--accent)}
 .foot-resv svg{width:18px;height:18px;color:#fff;stroke:#fff}
+.foot-resv:hover svg{color:var(--accent);stroke:var(--accent)}
 .ai-contacts{display:flex;gap:8px}
 .qa{flex:1;justify-content:center;border:1px solid var(--line-2);background:var(--soft-2);border-radius:11px;padding:11px 8px;font:700 13px var(--font);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;transition:all .15s}
 .qa:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
@@ -275,8 +282,9 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .ai-compose input{flex:1;border:1.5px solid var(--line-2);border-radius:13px;padding:12px 14px;font:600 14px var(--font);outline:none;font-family:var(--font)}
 .ai-compose input:focus{border-color:var(--accent)}
 .ai-compose .send{width:46px;border:0;border-radius:13px;background:var(--ink);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-.ai-compose .send:hover{background:var(--ink-2)}
+.ai-compose .send:hover{background:var(--ink)}
 .ai-compose .send svg{width:19px;height:19px}
+.ai-compose .send:hover svg{stroke:var(--accent)}
 .disclaim{font:600 9.5px/1.3 var(--font);color:var(--muted-2);text-align:center;padding:0 14px 9px;background:var(--paper)}
 
 @media(max-width:520px){
@@ -290,33 +298,13 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 <body>
 
 <!-- ============ DEMO podkladová stránka (mock Aplan) ============ -->
-<div class="demo-ribbon">Ukážka <b>AI asistenta</b> pre projektovú kanceláriu — vpravo dole vás prevedie úradnými postupmi, dokumentmi a rezerváciou konzultácie.</div>
-<nav class="nav" style="margin-top:32px">
-  <div class="brand">
-    <span id="brandmono"></span>
-    <div>
-      <div class="word">APLAN</div>
-      <div class="tag">projektová kancelária</div>
-    </div>
-  </div>
-  <div class="nav-links">
-    <a href="#">Projekty</a><a href="#">Služby</a><a href="#">Ocenenia</a><a href="#">O nás</a><a href="#">Kontakt</a>
-  </div>
-</nav>
-<header class="hero">
-  <div class="eyebrow">Designing office · od 1994</div>
-  <h1>Premyslené projekty pre stavby, ktoré obstoja.</h1>
-  <p>Architektonicko-projekčná kancelária. Pripravíme vám projektovú dokumentáciu, návrh a odborné podklady pre stavebné konanie. Nižšie vpravo nájdete nášho <b>AI asistenta</b> — pomôže vám zistiť, kde začať.</p>
-  <div class="actions">
-    <a class="btn-dark" href="#" onclick="aiOpen();return false">Otvoriť AI asistenta</a>
-    <a class="btn-line" href="#">Naše projekty</a>
-  </div>
-</header>
-<section class="grid-cards">
-  <div class="gc"><h3>Projektová dokumentácia</h3><p>Architektonicko-stavebná časť a koordinácia profesií pre povolenie aj realizáciu.</p></div>
-  <div class="gc"><h3>Návrh & štúdie</h3><p>Od úvodného zámeru po finálne riešenie dispozície, hmoty a osadenia na pozemku.</p></div>
-  <div class="gc"><h3>Odborné podklady</h3><p>Statika, energetika a podklady, ktoré potrebujete pri komunikácii s úradmi.</p></div>
-</section>
+<div class="demo-ribbon">Ukážka <b>AI asistenta</b> — vpravo dole otvorte chat a vyskúšajte ho.</div>
+<main class="stage">
+  <span id="brandmono" class="stage-logo"></span>
+  <h1 class="stage-h">AI asistent</h1>
+  <p class="stage-p">Prevedie vás postupmi, dokumentmi a komunikáciou s úradom — a viete si rovno rezervovať konzultáciu.</p>
+  <button class="btn-dark" onclick="aiOpen()">Otvoriť asistenta</button>
+</main>
 
 <!-- ============ AI ASISTENT ============ -->
 <div id="ai-teaser" onclick="aiOpen()">
@@ -394,7 +382,8 @@ const I = {
   chk   :'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
   book  :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M19 3v18"/></svg>',
   faq   :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 .3c0 1.7-2.5 2-2.5 3.7M12 17h.01"/></svg>',
-  arrow :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+  arrow :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  info  :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg>'
 };
 
 /* ——— jadro konverzácie ——— */
@@ -470,7 +459,7 @@ function renderMenu(){
     ['Úradné postupy','Stavebné povolenie, ohlásenie, kolaudácia, prístavba',I.steps,'uradne'],
     ['Komunikácia s úradom','Čo a ako napísať, ako reagovať na výzvu úradu',I.mail,'kom'],
     ['Aké podklady potrebujem?','Prehľadný checklist dokumentov',I.list,'podklady'],
-    ['Mám pozemok alebo stavbu — čo ďalej?','Nasmerujem vás na ďalší krok',I.search,'start'],
+    ['Čo robí Aplan','V skratke, ako vám vieme pomôcť',I.info,'about'],
     ['Pojmy, skratky a vysvetlenia','Služby, postupy a časté otázky',I.book,'kb']
   ];
   rows.forEach(it=>{
@@ -579,14 +568,11 @@ const TT={
   },
   /* Preveďte ma tým, čo robíte */
   about(){
-    botMsg('Sme <b>projektová (architektonicko-inžinierska) kancelária</b>. Pomôžeme vám od prvého nápadu až po pripravené podklady pre úrad.');
-    botMsg(infoBlock('Čo pre vás robíme', miniList([
-      'Architektonický návrh a štúdia — dispozícia, hmota, osadenie na pozemku.',
+    botMsg(infoBlock('Čo robí Aplan', miniList([
       'Projektová dokumentácia pre stavebné povolenie aj realizáciu.',
-      'Koordinácia profesií — statika, elektro, voda, kúrenie, energetika.',
-      'Odborné podklady pre komunikáciu s úradmi a dotknutými orgánmi.',
-      'Konzultácie a vedenie procesom — vysvetlíme, čo a kedy treba.'
-    ])));
+      'Architektonický návrh a koordinácia profesií (statika, elektro, voda, kúrenie, energetika).',
+      'Odborné podklady a vedenie procesom — vysvetlíme, čo a kedy treba.'
+    ])+'<span class="mini">Podanie na úrade si rieši klient; my pripravíme projekt a podklady.</span>'));
     next([{t:'Úradné postupy',ic:I.steps,fn:()=>topic('uradne')},RESV]);
   },
   /* Mám pozemok alebo stavbu — čo ďalej */
