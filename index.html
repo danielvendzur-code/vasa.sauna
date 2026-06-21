@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Aplan AI — asistent projektovej kancelárie (DEMO)</title>
-<meta name="description" content="Demo ukážka webového AI asistenta pre projektovú kanceláriu Aplan. Pomôže klientovi zistiť ďalší krok pri projekte, povolení, rekonštrukcii či legalizácii.">
+<meta name="description" content="Webový AI asistent pre projektovú kanceláriu Aplan. Prevedie klienta úradnými postupmi, dokumentmi a komunikáciou s úradom a umožní rezervovať konzultáciu.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -20,9 +20,9 @@
   --line-2:#D7D6CE;
   --muted:#6E6E66;
   --muted-2:#8C8C83;
-  --accent:#B5894B;     /* bronz / mosadz — materiálová teplota architektúry */
-  --accent-2:#9A6E33;
-  --accent-soft:#F3E9D9;
+  --accent:#B89A6E;     /* bronz/taupe — presne podľa loga Aplan */
+  --accent-2:#937645;
+  --accent-soft:#F2ECE1;
   --ok:#3E7C5A;
   --warn:#B8893A;
   --hard:#B25540;
@@ -37,10 +37,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-
 body.ai-locked{overflow:hidden;position:fixed;width:100%}
 
 /* ============ DEMO PODKLADOVÁ STRÁNKA (mock Aplan) ============ */
-.demo-ribbon{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--ink);color:#fff;font:700 12px/1 var(--font);letter-spacing:.04em;text-align:center;padding:8px 14px;text-transform:uppercase}
-.demo-ribbon b{color:var(--accent)}
+.demo-ribbon{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--soft);color:var(--muted);font:600 11.5px/1.4 var(--font);letter-spacing:.01em;text-align:center;padding:7px 14px;border-bottom:1px solid var(--line)}
+.demo-ribbon b{color:var(--ink);font-weight:700}
+.stage{max-width:560px;margin:0 auto;padding:130px 24px 80px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
+.stage-logo{display:flex}
+.stage-logo svg{width:56px;height:56px}
+.stage-h{font:900 40px var(--font);letter-spacing:-.02em;margin:6px 0 0}
+.stage-p{font:500 16px/1.6 var(--font);color:var(--muted);max-width:44ch;margin:0}
+@media(max-width:560px){.stage{padding:96px 20px 60px}.stage-h{font-size:32px}.stage-p{font-size:15px}}
 .nav{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(244,244,241,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px}
+.brand #brandmono{display:flex;align-items:center}
+.brand svg{width:32px;height:32px}
 .brand .word{font:900 22px var(--font);letter-spacing:.16em}
 .brand .tag{font:600 10px var(--font);letter-spacing:.34em;color:var(--muted);text-transform:uppercase}
 .nav-links{display:flex;gap:30px;font:600 14px var(--font)}
@@ -66,20 +74,20 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 /* ============ TEASER BUBLINA ============ */
 #ai-teaser{position:fixed;right:20px;bottom:104px;z-index:99998;max-width:300px;background:var(--paper);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow-sm);border-radius:16px;padding:14px 42px 14px 16px;font:650 13.5px/1.4 var(--font);opacity:0;transform:translateY(10px);pointer-events:none;transition:all .3s ease}
 #ai-teaser.show{opacity:1;transform:none;pointer-events:auto}
+#ai-teaser:hover{border-color:var(--line-2)}
 #ai-teaser b{color:var(--accent-2)}
+#ai-teaser-txt{transition:opacity .25s ease;display:inline-block}
 #ai-teaser:after{content:"";position:absolute;right:30px;bottom:-7px;width:14px;height:14px;background:var(--paper);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
 #ai-teaser .x{position:absolute;right:8px;top:8px;width:22px;height:22px;border:0;background:var(--soft);color:var(--muted);border-radius:50%;font-size:13px;cursor:pointer;line-height:1}
 
 /* ============ LAUNCHER ============ */
-#ai-launch{position:fixed;right:20px;bottom:20px;z-index:100000;width:66px;height:66px;border:0;border-radius:20px;background:var(--ink);box-shadow:0 18px 40px rgba(22,24,28,.34);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .25s cubic-bezier(.2,1.4,.2,1),opacity .2s}
-#ai-launch:hover{transform:translateY(-3px) scale(1.04)}
-#ai-launch.open{opacity:0;pointer-events:none;transform:scale(.8)}
-#ai-launch .mono{width:38px;height:38px}
-#ai-launch .dot{position:absolute;right:10px;top:10px;width:11px;height:11px;border-radius:50%;background:var(--accent);border:2.5px solid var(--ink);animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(181,137,75,.5)}70%{box-shadow:0 0 0 9px rgba(181,137,75,0)}100%{box-shadow:0 0 0 0 rgba(181,137,75,0)}}
+#ai-launch{position:fixed;right:20px;bottom:20px;z-index:100000;width:62px;height:62px;border:0;border-radius:18px;background:var(--ink);box-shadow:0 14px 34px rgba(22,24,28,.28);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .22s ease,box-shadow .22s ease,opacity .2s}
+#ai-launch:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(22,24,28,.34)}
+#ai-launch.open{opacity:0;pointer-events:none;transform:scale(.85)}
+#ai-launch .mono{width:34px;height:34px}
 
 /* ============ CHAT PANEL ============ */
-#ai-panel{position:fixed;right:20px;bottom:20px;z-index:99999;width:420px;height:min(720px,calc(100dvh - 40px));background:var(--paper);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(20px) scale(.96);transform-origin:bottom right;transition:opacity .22s,transform .34s cubic-bezier(.2,1.2,.2,1)}
+#ai-panel{position:fixed;right:20px;bottom:20px;z-index:99999;width:444px;height:min(764px,calc(100dvh - 40px));background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(20px) scale(.96);transform-origin:bottom right;transition:opacity .22s,transform .34s cubic-bezier(.2,1.2,.2,1)}
 #ai-panel.open{opacity:1;pointer-events:auto;transform:none}
 
 .ai-head{position:relative;display:flex;align-items:center;gap:13px;padding:16px 16px;background:var(--ink);color:#fff}
@@ -90,8 +98,10 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .ai-head .ht .s{display:flex;align-items:center;gap:6px;font:600 11.5px var(--font);color:rgba(255,255,255,.6);margin-top:3px}
 .ai-head .ht .s i{width:7px;height:7px;border-radius:50%;background:#52c989;display:inline-block}
 .ai-head .ht .s b{color:var(--accent);font-weight:700}
-.ai-head .hx{width:34px;height:34px;border:0;border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer;flex:0 0 auto}
-.ai-head .hx:hover{background:rgba(255,255,255,.18)}
+.ai-hactions{display:flex;gap:6px;flex:0 0 auto}
+.hbtn{width:34px;height:34px;border:0;border-radius:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.82);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s}
+.hbtn:hover{background:rgba(255,255,255,.2);color:#fff}
+.hbtn svg{width:17px;height:17px}
 
 .ai-body{flex:1;overflow-y:auto;padding:18px 16px 8px;background:linear-gradient(180deg,var(--soft-2),var(--paper));scroll-behavior:smooth}
 .ai-body::-webkit-scrollbar{width:7px}
@@ -128,13 +138,61 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .chip:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-1px)}
 .chip .ic{width:15px;height:15px;opacity:.7}
 .chip.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
-.chip.primary:hover{background:var(--ink-2)}
+.chip.primary:hover{background:var(--ink);color:var(--accent)}
+
+/* úvodné menu — premiový zoznam */
+.menu{margin:6px 0 12px 0;animation:rise .3s ease both}
+.menu-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--paper);box-shadow:0 8px 24px rgba(22,24,28,.07)}
+.mrow{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--paper);padding:13px 15px;cursor:pointer;transition:background .18s;font-family:var(--font)}
+.mrow:last-child{border-bottom:0}
+.mrow::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transform-origin:center;transition:transform .2s;border-radius:0 3px 3px 0}
+.mrow:hover{background:var(--soft-2)}
+.mrow:hover::before{transform:scaleY(1)}
+.mrow .mi{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:background .18s}
+.mrow:hover .mi{background:var(--accent)}
+.mrow .mi svg{width:17px;height:17px;color:var(--accent-2);transition:color .18s}
+.mrow:hover .mi svg{color:#fff}
+.mrow .mt2{flex:1;min-width:0}
+.mrow .mt2 b{display:block;font:700 13.5px var(--font);color:var(--ink);letter-spacing:-.01em}
+.mrow .mt2 span{display:block;font:600 11px var(--font);color:var(--muted);margin-top:1px}
+.mrow .mchev{width:15px;height:15px;color:var(--line-2);flex:0 0 auto;transition:transform .18s,color .18s}
+.mrow:hover .mchev{color:var(--accent-2);transform:translateX(3px)}
+.menu .resv{margin-bottom:11px}
+.resv{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:12px 13px;cursor:pointer;transition:all .15s}
+.resv:hover{border-color:var(--accent);box-shadow:0 6px 18px rgba(22,24,28,.06)}
+.resv.hi{border-color:var(--accent);background:var(--accent-soft)}
+.resv.hi:hover{box-shadow:0 8px 22px rgba(181,137,75,.15)}
+.resv .ri{width:40px;height:40px;border-radius:11px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.resv.hi .ri{background:var(--accent-2)}
+.resv .ri svg{width:19px;height:19px;color:#fff;stroke:#fff}
+.resv .rt{flex:1;min-width:0}
+.resv .rt b{font:800 13.5px var(--font);display:block;color:var(--ink)}
+.resv .rt span{font:600 11px var(--font);color:var(--muted)}
+.resv .rg svg{width:16px;height:16px;color:var(--muted-2)}
+.aplan-note{margin-top:8px;border-left:2px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:9px 12px;font:600 12px/1.5 var(--font);color:var(--ink-3)}
+.aplan-note b{color:var(--ink)}
+.gdpr{display:flex;align-items:flex-start;gap:8px;margin:9px 0 2px;cursor:pointer}
+.gdpr input{margin-top:1px;accent-color:var(--accent);flex:0 0 auto;width:15px;height:15px;cursor:pointer}
+.gdpr span{font:600 10.5px/1.45 var(--font);color:var(--muted)}
+.gdpr a{color:var(--accent-2);font-weight:700}
+.confirm-send{display:inline-block;margin-top:11px;background:var(--ink);color:#fff;text-decoration:none;border-radius:11px;padding:10px 16px;font:800 13px var(--font);transition:color .18s}
+.confirm-send:hover{color:var(--accent)}
 
 /* karty / panely vnútri správy */
 .panel{margin-top:10px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper)}
 .panel-h{background:var(--soft);padding:10px 13px;font:800 12.5px var(--font);letter-spacing:.02em;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 .panel-h .pin{width:8px;height:8px;border-radius:2px;background:var(--accent)}
 .panel-b{padding:13px}
+
+/* prehliadač oblastí (KB) */
+.kbcat{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid var(--line);background:var(--soft-2);border-radius:12px;padding:11px 12px;margin-bottom:8px;cursor:pointer;transition:all .15s;font-family:var(--font)}
+.kbcat:last-child{margin-bottom:0}
+.kbcat:hover{border-color:var(--accent);background:var(--accent-soft)}
+.kbcat .ic{width:18px;height:18px;color:var(--accent-2);flex:0 0 auto}
+.kbcat>div{flex:1;min-width:0}
+.kbcat .kt{font:800 13px var(--font);color:var(--ink)}
+.kbcat .kd{font:600 11px var(--font);color:var(--muted);margin-top:1px}
+.kbcat>svg:last-child{width:16px;height:16px;color:var(--muted-2);flex:0 0 auto}
 
 /* checklist */
 .check{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}
@@ -161,27 +219,36 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .field textarea{resize:vertical;min-height:64px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .btn-go{width:100%;background:var(--ink);color:#fff;border:0;border-radius:12px;padding:12px;font:800 14px var(--font);cursor:pointer;margin-top:4px;transition:background .18s}
-.btn-go:hover{background:var(--ink-2)}
+.btn-go:hover{background:var(--ink);color:var(--accent)}
 .btn-ghost{width:100%;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:11px;font:700 13px var(--font);cursor:pointer;margin-top:7px}
 
 /* kalendár */
-.cal-types{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
-.cal-type{border:1.5px solid var(--line-2);border-radius:12px;padding:11px;cursor:pointer;transition:all .15s;background:var(--soft-2)}
-.cal-type:hover{border-color:var(--accent)}
-.cal-type.on{border-color:var(--accent);background:var(--accent-soft)}
-.cal-type .tt{font:800 12.5px var(--font);display:flex;align-items:center;gap:6px}
-.cal-type .td{font:600 10.5px var(--font);color:var(--muted);margin-top:3px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:4px}
-.cal-dow{font:800 9.5px var(--font);color:var(--muted-2);text-align:center;text-transform:uppercase;padding:3px 0}
-.cal-day{aspect-ratio:1;border:1px solid var(--line);border-radius:9px;background:var(--soft-2);font:700 12px var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;position:relative}
-.cal-day:hover:not(.off){border-color:var(--accent);background:var(--accent-soft)}
-.cal-day.off{color:var(--line-2);background:transparent;border-color:transparent;cursor:default}
-.cal-day.free::after{content:"";position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:var(--accent)}
-.cal-day.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.cal-times{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
-.cal-time{border:1.5px solid var(--line-2);border-radius:10px;padding:9px 0;text-align:center;font:700 12.5px var(--font);cursor:pointer;background:var(--soft-2);transition:all .14s}
+.cal-l{font:800 10px var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--muted-2);margin:14px 2px 8px}
+.cal-card>.cal-l:first-child{margin-top:2px}
+.cal-types{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cal-type{display:flex;align-items:center;gap:11px;border:0;border-bottom:1px solid var(--line);padding:12px 13px;cursor:pointer;transition:background .15s;background:transparent}
+.cal-type:last-child{border-bottom:0}
+.cal-type:hover{background:var(--accent-soft)}
+.cal-type.on{background:var(--accent-soft)}
+.cal-type .ctt{flex:1;min-width:0}
+.cal-type .tt{font:800 13px var(--font);color:var(--ink)}
+.cal-type .td{font:600 11px var(--font);color:var(--muted);margin-top:2px}
+.cal-type .rad{width:19px;height:19px;border-radius:50%;border:2px solid var(--line-2);flex:0 0 auto;position:relative;transition:all .15s}
+.cal-type.on .rad{border-color:var(--accent)}
+.cal-type.on .rad::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--accent)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 9px}
+.cal-month{font:800 14px var(--font);color:var(--ink)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{font:700 9.5px var(--font);color:var(--muted-2);text-align:center;text-transform:uppercase;padding:2px 0 5px}
+.cal-day{aspect-ratio:1;border:1px solid transparent;border-radius:10px;background:transparent;font:600 12.5px var(--font);color:var(--line-2);cursor:default;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.cal-day.free{color:var(--ink);font-weight:700;cursor:pointer}
+.cal-day.free:hover{background:var(--accent-soft)}
+.cal-day.on{background:var(--ink);color:#fff;font-weight:800}
+.cal-times{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.cal-time{border:1.5px solid var(--line);border-radius:11px;padding:11px 0;text-align:center;font:700 13px var(--font);color:var(--ink);cursor:pointer;background:var(--paper);transition:all .14s}
 .cal-time:hover{border-color:var(--accent);background:var(--accent-soft)}
 .cal-time.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cal-card{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:13px;margin-top:10px}
 
 /* generovaný text / box na kopírovanie */
 .copybox{background:var(--ink);color:#EDEDE6;border-radius:12px;padding:13px 14px;font:500 12.5px/1.6 var(--font);white-space:pre-wrap;margin-top:4px;max-height:240px;overflow-y:auto}
@@ -204,20 +271,26 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .confirm .cb{font:600 12.5px/1.5 var(--font);color:var(--ink-3)}
 .demo-tag{display:inline-block;background:var(--ink);color:#fff;font:800 9px var(--font);letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:5px;margin-left:6px;vertical-align:middle}
 
-/* rýchle kontaktné akcie (lišta) */
-.ai-quick{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--line);background:var(--paper);overflow-x:auto}
-.ai-quick::-webkit-scrollbar{height:0}
-.qa{border:1px solid var(--line-2);background:var(--soft-2);border-radius:10px;padding:8px 11px;font:700 11.5px var(--font);color:var(--ink);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;transition:all .15s}
-.qa:hover{border-color:var(--accent);background:var(--accent-soft)}
-.qa svg{width:14px;height:14px;opacity:.7}
+/* rýchle kontakty — kompaktná lišta pod inputom */
+/* sticky pätička */
+.ai-foot{padding:0 12px 12px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
+.foot-resv{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:0;border-radius:13px;background:var(--ink);color:#fff;padding:13px;font:800 14px var(--font);cursor:pointer;transition:background .18s}
+.foot-resv:hover{background:var(--ink);color:var(--accent)}
+.foot-resv svg{width:18px;height:18px;color:#fff;stroke:#fff}
+.foot-resv:hover svg{color:var(--accent);stroke:var(--accent)}
+.ai-contacts{display:flex;gap:8px}
+.qa{flex:1;justify-content:center;border:1px solid var(--line-2);background:var(--soft-2);border-radius:11px;padding:11px 8px;font:700 13px var(--font);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;transition:all .15s}
+.qa:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.qa svg{width:17px;height:17px;opacity:.8}
 
 /* composer */
 .ai-compose{display:flex;gap:8px;padding:11px 12px 13px;border-top:1px solid var(--line);background:var(--paper)}
 .ai-compose input{flex:1;border:1.5px solid var(--line-2);border-radius:13px;padding:12px 14px;font:600 14px var(--font);outline:none;font-family:var(--font)}
 .ai-compose input:focus{border-color:var(--accent)}
 .ai-compose .send{width:46px;border:0;border-radius:13px;background:var(--ink);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-.ai-compose .send:hover{background:var(--ink-2)}
+.ai-compose .send:hover{background:var(--ink)}
 .ai-compose .send svg{width:19px;height:19px}
+.ai-compose .send:hover svg{stroke:var(--accent)}
 .disclaim{font:600 9.5px/1.3 var(--font);color:var(--muted-2);text-align:center;padding:0 14px 9px;background:var(--paper)}
 
 @media(max-width:520px){
@@ -231,43 +304,22 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 <body>
 
 <!-- ============ DEMO podkladová stránka (mock Aplan) ============ -->
-<div class="demo-ribbon">UKÁŽKA / DEMO REŽIM — návrh AI asistenta pre <b>APLAN</b> projektovú kanceláriu · žiadne dáta sa neodosielajú</div>
-<nav class="nav" style="margin-top:33px">
-  <div class="brand">
-    <span id="brandmono"></span>
-    <div>
-      <div class="word">APLAN</div>
-      <div class="tag">projektová kancelária</div>
-    </div>
-  </div>
-  <div class="nav-links">
-    <a href="#">Projekty</a><a href="#">Služby</a><a href="#">Ocenenia</a><a href="#">O nás</a><a href="#">Kontakt</a>
-  </div>
-</nav>
-<header class="hero">
-  <div class="eyebrow">Designing office · od 1994</div>
-  <h1>Premyslené projekty pre stavby, ktoré obstoja.</h1>
-  <p>Architektonicko-projekčná kancelária. Pripravíme vám projektovú dokumentáciu, návrh a odborné podklady pre stavebné konanie. Nižšie vpravo nájdete nášho <b>AI asistenta</b> — pomôže vám zistiť, kde začať.</p>
-  <div class="actions">
-    <a class="btn-dark" href="#" onclick="aiOpen();return false">Otvoriť AI asistenta</a>
-    <a class="btn-line" href="#">Naše projekty</a>
-  </div>
-</header>
-<section class="grid-cards">
-  <div class="gc"><h3>Projektová dokumentácia</h3><p>Architektonicko-stavebná časť a koordinácia profesií pre povolenie aj realizáciu.</p></div>
-  <div class="gc"><h3>Návrh & štúdie</h3><p>Od úvodného zámeru po finálne riešenie dispozície, hmoty a osadenia na pozemku.</p></div>
-  <div class="gc"><h3>Odborné podklady</h3><p>Statika, energetika a podklady, ktoré potrebujete pri komunikácii s úradmi.</p></div>
-</section>
+<div class="demo-ribbon">Ukážka <b>AI asistenta</b> — vpravo dole otvorte chat a vyskúšajte ho.</div>
+<main class="stage">
+  <span id="brandmono" class="stage-logo"></span>
+  <h1 class="stage-h">AI asistent</h1>
+  <p class="stage-p">Prevedie vás postupmi, dokumentmi a komunikáciou s úradom — a viete si rovno rezervovať konzultáciu.</p>
+  <button class="btn-dark" onclick="aiOpen()">Otvoriť asistenta</button>
+</main>
 
 <!-- ============ AI ASISTENT ============ -->
-<div id="ai-teaser">
-  <button class="x" onclick="document.getElementById('ai-teaser').classList.remove('show')">×</button>
-  Neviete, čo potrebujete k projektu alebo povoleniu? <b>Aplan AI</b> vám pomôže zistiť ďalší krok.
+<div id="ai-teaser" onclick="aiOpen()">
+  <button class="x" aria-label="Zavrieť" onclick="event.stopPropagation();aiTeaserClose()">×</button>
+  <span id="ai-teaser-txt"></span>
 </div>
 
 <button id="ai-launch" aria-label="Otvoriť asistenta" onclick="aiOpen()">
   <span class="mono" id="launchmono"></span>
-  <span class="dot"></span>
 </button>
 
 <div id="ai-panel" role="dialog" aria-label="Aplan AI asistent">
@@ -275,35 +327,55 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
     <div class="av"><span class="mono" id="headmono"></span></div>
     <div class="ht">
       <div class="t">Aplan AI</div>
-      <div class="s"><i></i> Online <b>· demo režim</b></div>
+      <div class="s"><i></i> Asistent je online</div>
     </div>
-    <button class="hx" onclick="aiClose()" aria-label="Zavrieť">×</button>
+    <div class="ai-hactions">
+      <button class="hbtn" onclick="aiHome()" aria-label="Hlavné menu" title="Hlavné menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>
+      </button>
+      <button class="hbtn" onclick="aiRestart()" aria-label="Začať odznova" title="Začať odznova">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+      <button class="hbtn" onclick="aiClose()" aria-label="Zavrieť" title="Zavrieť">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
   </div>
   <div class="ai-body" id="ai-body"></div>
-  <div class="ai-quick" id="ai-quick"></div>
   <div class="ai-compose">
     <input id="ai-input" placeholder="Napíšte správu…" autocomplete="off">
     <button class="send" onclick="aiUserSend()" aria-label="Odoslať">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
     </button>
   </div>
-  <div class="disclaim">Aplan je projektová kancelária. Asistent poskytuje orientačné informácie, nie právne ani úradné rozhodnutia. Úrady si klient rieši sám; Aplan pomáha s projektovou dokumentáciou a podkladmi.</div>
+  <div class="ai-foot" id="ai-foot"></div>
 </div>
 
 <script>
 /* =========================================================
-   APLAN AI — DEMO asistent. Všetky odpovede sú scenárované
-   (fake), aby ukážka pôsobila ako reálna funkcia. Žiadne
-   dáta sa neodosielajú; kalendár ani e-maily nie sú napojené.
+   APLAN AI — webový asistent projektovej kancelárie.
+   Sprevádza klienta úradnými postupmi, dokumentmi a
+   komunikáciou s úradom a umožňuje rezerváciu konzultácie.
    ========================================================= */
 
-/* ——— Logo monogram: "A" z Aplanu + malé "i" => "AI" ——— */
-function mono(color){
+/* === KONFIGURÁCIA — jediné miesto na vyplnenie údajov firmy === */
+const CFG = {
+  firma:      'Aplan',
+  telefon:    '+421 911 123 456',   // zobrazený formát
+  telefonRaw: '+421911123456',      // pre tel: (bez medzier)
+  whatsapp:   '421911123456',       // pre wa.me (medzinárodné číslo bez +)
+  email:      'info@aplan.sk',
+  web:        'https://www.aplan.sk',
+  gdprUrl:    'https://www.aplan.sk/ochrana-osobnych-udajov',
+  hodiny:     'Po–Pia 8:00–16:00'
+};
+
+/* ——— Logo: chevron „A" z reálneho loga Aplan + „i" s bodkou => „AI" verzia značky ——— */
+function mono(){
   return `<svg class="mono" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 33 L17 7 L23 7 L34 33 L27.5 33 L25.2 27 L14.6 27 L12.3 33 Z M16.5 22 L23.3 22 L19.9 13 Z"
-          fill="${color}"/>
-    <rect x="30.5" y="14" width="4.2" height="13" rx="1.4" fill="${color==='#fff'?'var(--accent)':'#B5894B'}"/>
-    <circle cx="32.6" cy="9.4" r="2.5" fill="${color==='#fff'?'var(--accent)':'#B5894B'}"/>
+    <path d="M14 4 L25 37 L19.4 37 L14 19.2 L8.6 37 L3 37 Z" fill="#B89A6E"/>
+    <rect x="30" y="16" width="4" height="21" rx="1.6" fill="#B89A6E"/>
+    <circle cx="32" cy="10.2" r="2.9" fill="#B89A6E"/>
   </svg>`;
 }
 document.getElementById('launchmono').outerHTML = mono('#fff');
@@ -325,7 +397,11 @@ const I = {
   send  :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
   phone :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>',
   wa    :'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.5 14c-.2.6-1.2 1.1-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.7 1.7c.1.2.1.3 0 .5l-.4.5c-.1.2-.3.3-.1.6.1.2.6 1 1.3 1.6.9.8 1.6 1 1.8 1.1.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.6-.1l1.6.8c.2.1.4.2.5.3.1.1.1.6-.1 1.1z"/></svg>',
-  chk   :'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+  chk   :'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  book  :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M19 3v18"/></svg>',
+  faq   :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 .3c0 1.7-2.5 2-2.5 3.7M12 17h.01"/></svg>',
+  arrow :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  info  :'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg>'
 };
 
 /* ——— jadro konverzácie ——— */
@@ -360,9 +436,29 @@ function esc(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','
 function aiOpen(){
   document.getElementById('ai-panel').classList.add('open');
   document.getElementById('ai-launch').classList.add('open');
-  document.getElementById('ai-teaser').classList.remove('show');
+  aiTeaserClose();
   if(window.matchMedia('(max-width:520px)').matches) document.body.classList.add('ai-locked');
   if(!started){started=true;welcome();}
+}
+const teaserPhrases=[
+  'Potrebujete pomôcť s vybavením vecí na úrade?',
+  'Zistite, aké kroky a dokumenty potrebujete.',
+  'AI asistent vám pomôže pripraviť sa na úradné vybavovanie.'
+];
+let teaserI=0,teaserTimer=null;
+function aiTeaserShow(){
+  if(started)return;
+  const t=document.getElementById('ai-teaser'),txt=document.getElementById('ai-teaser-txt');
+  txt.textContent=teaserPhrases[0];t.classList.add('show');
+  teaserTimer=setInterval(()=>{
+    if(!t.classList.contains('show'))return;
+    txt.style.opacity=0;
+    setTimeout(()=>{teaserI=(teaserI+1)%teaserPhrases.length;txt.textContent=teaserPhrases[teaserI];txt.style.opacity=1;},260);
+  },4800);
+}
+function aiTeaserClose(){
+  document.getElementById('ai-teaser').classList.remove('show');
+  if(teaserTimer){clearInterval(teaserTimer);teaserTimer=null;}
 }
 function aiClose(){
   document.getElementById('ai-panel').classList.remove('open');
@@ -370,43 +466,165 @@ function aiClose(){
   document.body.classList.remove('ai-locked');
 }
 
-/* ——— úvod ——— */
-function welcome(){
-  botMsg('Dobrý deň, som <b>Aplan AI asistent</b>. Pomôžem vám zistiť, aký typ projektu alebo podkladov môžete potrebovať, pripravím vám checklist dokumentov, pomôžem s textom správy na obec alebo stavebný úrad a môžete si tu predbežne vybrať termín konzultácie.<span class="mini">Aplan je projektová kancelária — úrady nevybavujeme za vás, ale pripravíme projekt a podklady a vysvetlíme postup.</span>');
-  setTimeout(()=>renderQuick(),300);
-  setTimeout(()=>menu(),520);
-}
-function menu(){
-  botMsg('Kde chcete začať?');
-  chipRow([
-    {t:'Zistiť, čo potrebujem',ic:I.search,primary:true,fn:flowNeed},
-    {t:'Chcem nový projekt domu',fn:()=>quickIntent('nový rodinný dom')},
-    {t:'Potrebujem riešiť povolenie',ic:I.steps,fn:flowSteps},
-    {t:'Chcem rekonštrukciu',fn:()=>quickIntent('rekonštrukcia')},
-    {t:'Vytvoriť správu na úrad',ic:I.mail,fn:flowLetter},
-    {t:'Projektový štartovací balík',ic:I.pkg,fn:flowPackage},
-    {t:'Rezervovať konzultáciu',ic:I.cal,fn:flowCalendar},
-    {t:'Checklist dokumentov',ic:I.list,fn:()=>flowChecklist()},
-    {t:'Neviem, potrebujem poradiť',fn:flowNeed}
-  ]);
-}
-function backMenu(){ setTimeout(()=>chipRow([{t:'↩ Späť na hlavné menu',fn:menu},{t:'Poslať dopyt firme Aplan',ic:I.send,primary:true,fn:flowLead}]),250); }
-
-/* ——— rýchle kontaktné akcie (lišta) ——— */
-function renderQuick(){
-  const q=document.getElementById('ai-quick');
-  const acts=[
-    {t:'Zavolať',svg:I.phone,fn:()=>botMsg('Telefón na Aplan: <b>+421 900 000 000</b><span class="mini">Demo číslo — v reálnej verzii sa otvorí telefón klienta.</span>')},
-    {t:'E-mail',svg:I.mail,fn:()=>botMsg('Napíšte nám na <b>info@aplan.sk</b><span class="mini">Demo — v ostrej verzii otvorí poštového klienta.</span>')},
-    {t:'WhatsApp',svg:I.wa,fn:()=>botMsg('WhatsApp: <b>+421 900 000 000</b><span class="mini">Demo odkaz — neskôr napojiteľný na wa.me.</span>')},
-    {t:'Konzultácia',svg:I.cal,fn:flowCalendar},
-    {t:'Poslať dopyt',svg:I.send,fn:flowLead},
-    {t:'Čo potrebujem',svg:I.search,fn:flowNeed},
-    {t:'Správa na úrad',svg:I.mail,fn:flowLetter}
+/* ——— úvod: bez uvítacej správy, rovno akčné chipy (návod je v inpute) ——— */
+function welcome(){ renderMenu(); }
+function menu(){ body.querySelectorAll('.menu').forEach(x=>x.remove()); renderMenu(); }
+function aiHome(){ menu(); }
+function renderMenu(){
+  const wrap=el('<div class="menu"></div>');
+  const card=el('<div class="menu-card"></div>');
+  const rows=[
+    ['Úradné postupy','Stavebné povolenie, ohlásenie, kolaudácia, prístavba',I.steps,'uradne'],
+    ['Komunikácia s úradom','Čo a ako napísať, ako reagovať na výzvu úradu',I.mail,'kom'],
+    ['Aké podklady potrebujem?','Prehľadný checklist dokumentov',I.list,'podklady'],
+    ['Čo robí Aplan','V skratke, ako vám vieme pomôcť',I.info,'about'],
+    ['Pojmy, skratky a vysvetlenia','Služby, postupy a časté otázky',I.book,'kb']
   ];
-  q.innerHTML='';
-  acts.forEach(a=>{const b=el(`<button class="qa">${a.svg}${a.t}</button>`);b.onclick=()=>typing(a.fn);q.appendChild(b);});
+  rows.forEach(it=>{
+    const b=el(`<button class="mrow"><span class="mi">${it[2]}</span><div class="mt2"><b>${it[0]}</b><span>${it[1]}</span></div><svg class="mchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>`);
+    b.onclick=()=>{wrap.remove();userMsg(it[0]);typing(()=>topic(it[3]));};
+    card.appendChild(b);
+  });
+  wrap.appendChild(card);
+  body.appendChild(wrap);scroll();
 }
+function aiRestart(){ body.innerHTML=''; welcome(); }
+function backMenu(){ setTimeout(()=>chipRow([{t:'Späť na menu',fn:menu},{t:'Poslať dopyt',ic:I.send,primary:true,fn:flowLead}]),250); }
+
+/* ——— krokový sprievodca témami ——— */
+function infoBlock(title,html){return `<div class="panel"><div class="panel-h"><span class="pin"></span>${title}</div><div class="panel-b" style="font:500 13px/1.55 var(--font);color:var(--ink-3)">${html}</div></div>`;}
+function postup(title,steps){
+  let h=`<div class="panel"><div class="panel-h"><span class="pin"></span>${title}</div><div class="panel-b">`;
+  steps.forEach((s,i)=>h+=`<div class="step"><div class="n">${i+1}</div><div><div class="st">${s[0]}</div><div class="sd">${s[1]}</div></div></div>`);
+  return h+'</div></div>';
+}
+function aplanNote(html){return `<div class="aplan-note"><b>Čo pripraví Aplan:</b> ${html}</div>`;}
+function next(arr){ setTimeout(()=>chipRow(arr.concat([{t:'Späť na menu',fn:menu}])),260); }
+const RESV={t:'Rezervovať konzultáciu',ic:I.cal,fn:flowCalendar};
+const C_PISAT={t:'Čo napísať na úrad?',ic:I.mail,fn:()=>flowLetter()};
+function topic(id){ (TT[id]||menu)(); }
+
+const TT={
+  /* Úradné postupy — rozcestník */
+  uradne(){
+    botMsg('<b>Úradné postupy.</b> Vyberte, čo riešite — rozpíšem vám jasný postup krok za krokom: čo pripraviť, na ktorý úrad ísť, čo sa podáva a aké sú prílohy.');
+    next([
+      {t:'Stavebné povolenie',ic:I.steps,fn:()=>topic('sp')},
+      {t:'Ohlásenie drobnej stavby',ic:I.steps,fn:()=>topic('od')},
+      {t:'Kolaudácia',ic:I.steps,fn:()=>topic('kol')},
+      {t:'Zmena stavby alebo prístavba',ic:I.steps,fn:()=>topic('zmena')}
+    ]);
+  },
+  /* Stavebné povolenie */
+  sp(){
+    botMsg('<b>Stavebné povolenie</b> — postup krok za krokom:');
+    botMsg(postup('Stavebné povolenie',[
+      ['Pripravte podklady','List vlastníctva, kópia z katastrálnej mapy, údaje o pozemku a vaša predstava o stavbe.'],
+      ['Projektová dokumentácia','Dokumentáciu pre stavebné povolenie vrátane potrebných profesií pripraví projektová kancelária.'],
+      ['Vyjadrenia dotknutých orgánov','Zabezpečte vyjadrenia správcov sietí a dotknutých orgánov podľa typu a lokality stavby.'],
+      ['Podanie žiadosti','Žiadosť podáte na príslušnom stavebnom úrade (obec/mesto) — osobne, poštou alebo cez slovensko.sk.'],
+      ['Prílohy k žiadosti','Projektová dokumentácia, list vlastníctva, vyjadrenia, doklad o úhrade správneho poplatku.'],
+      ['Konanie a rozhodnutie','Úrad môže vyžiadať doplnenie; po splnení podmienok vydá rozhodnutie.']
+    ])+aplanNote('kompletnú projektovú dokumentáciu a odborné podklady. Podanie a vyjadrenia si zabezpečuje stavebník — poradíme ako.'));
+    next([C_PISAT,RESV]);
+  },
+  /* Ohlásenie drobnej stavby */
+  od(){
+    botMsg('<b>Ohlásenie drobnej stavby</b> (napr. garáž, prístrešok, plot) — postup krok za krokom:');
+    botMsg(postup('Ohlásenie drobnej stavby',[
+      ['Pripravte podklady','List vlastníctva, jednoduchá situácia/náčrt a základné rozmery stavby.'],
+      ['Jednoduchá dokumentácia','Pri drobnej stavbe stačí jednoduchšia dokumentácia — pripraví ju projektová kancelária podľa potreby.'],
+      ['Ohlásenie na úrad','Ohlásenie podáte na príslušnom stavebnom úrade (obec/mesto).'],
+      ['Prílohy','Formulár ohlásenia, jednoduchá dokumentácia/náčrt, list vlastníctva, prípadne súhlas susedov a vyjadrenia.'],
+      ['Stanovisko úradu','Počkajte na písomné stanovisko úradu, či proti realizácii nemá námietky.']
+    ])+aplanNote('jednoduchú dokumentáciu/náčrt a poradí, či pre váš zámer postačuje ohlásenie.'));
+    next([{t:'Stačí ohlásenie, alebo treba povolenie?',fn:()=>flowLetter('ohlaska_povolenie')},C_PISAT,RESV]);
+  },
+  /* Kolaudácia */
+  kol(){
+    botMsg('<b>Kolaudácia</b> — postup krok za krokom:');
+    botMsg(postup('Kolaudácia',[
+      ['Dokončite stavbu','Stavba musí byť v stave spôsobilom na užívanie.'],
+      ['Zabezpečte doklady','Revízne správy (elektro, komín, plyn…), energetický certifikát a geometrický plán — zameranie stavby.'],
+      ['Návrh na kolaudáciu','Podáte na príslušnom stavebnom úrade.'],
+      ['Prílohy','Návrh na kolaudáciu, projekt skutočného vyhotovenia (ak boli zmeny), revízie, certifikát, geometrický plán.'],
+      ['Obhliadka a rozhodnutie','Úrad vykoná obhliadku a vydá kolaudačné rozhodnutie.']
+    ])+aplanNote('projekt skutočného vyhotovenia a odborné podklady. Presný zoznam dokladov určuje úrad.'));
+    next([C_PISAT,RESV]);
+  },
+  /* Zmena stavby alebo prístavba */
+  zmena(){
+    botMsg('<b>Zmena stavby alebo prístavba</b> — postup krok za krokom:');
+    botMsg(postup('Zmena stavby / prístavba',[
+      ['Zhodnoťte existujúcu stavbu','Pripravte pôvodnú dokumentáciu (ak je), rozmery a fotky súčasného stavu.'],
+      ['Návrh zmeny / prístavby','Projektová kancelária navrhne riešenie a posúdi nadväznosť na pôvodnú stavbu vrátane statiky.'],
+      ['Dokumentácia a režim','Podľa rozsahu ide o ohlásenie alebo stavebné povolenie — dokumentáciu pripravíme v primeranom rozsahu.'],
+      ['Vyjadrenia a podanie','Zabezpečte potrebné vyjadrenia a podajte na príslušnom stavebnom úrade.'],
+      ['Prílohy','Dokumentácia zmeny/prístavby, list vlastníctva, vyjadrenia, doklad o úhrade poplatku.']
+    ])+aplanNote('návrh a projektovú dokumentáciu prístavby/zmeny vrátane potrebných profesií.'));
+    next([{t:'Stavebné povolenie',ic:I.steps,fn:()=>topic('sp')},C_PISAT,RESV]);
+  },
+  /* Komunikácia s úradom */
+  kom(){
+    botMsg('<b>Komunikácia s úradom.</b> Pár zásad, ktoré uľahčia vybavovanie:');
+    botMsg(infoBlock('Ako komunikovať s úradom', miniList([
+      'Píšte stručne a vecne — uveďte obec, parcelné číslo a čoho sa vec týka.',
+      'Vždy si vypýtajte konkrétne: zoznam príloh, lehoty a kontakt na referenta.',
+      'Komunikujte písomne (e-mail) — máte tak doklad o tom, čo bolo dohodnuté.',
+      'Na výzvu na doplnenie podkladov reagujte v lehote a doplňte presne to, čo úrad žiada.'
+    ])));
+    next([
+      {t:'Zobraziť vzor správy',ic:I.mail,fn:()=>{ botMsg('Krátky vzor — upravte si údaje:'+copyBlock('Dobrý deň,\n\nobraciam sa na Vás vo veci pozemku v obci [OBEC], parcelné číslo [PARCELA]. Prosím o informáciu, aké podklady a prílohy sú potrebné k [stavebnému povoleniu / ohláseniu] a aká je orientačná lehota vybavenia.\n\nĎakujem za odpoveď.\nS pozdravom,\n[MENO], [TELEFÓN]')); next([C_PISAT,RESV]); }},
+      {t:'Pripraviť konkrétnu správu',ic:I.mail,fn:()=>flowLetter()},
+      RESV
+    ]);
+  },
+  /* Aké podklady potrebujem */
+  podklady(){
+    botMsg('<b>Aké podklady potrebujem</b> závisí od zámeru. Tu je prehľad — odškrtnite si, čo už máte:');
+    setTimeout(()=>flowChecklist(),220);
+  },
+  /* Preveďte ma tým, čo robíte */
+  about(){
+    botMsg(infoBlock('Čo robí Aplan', miniList([
+      'Projektová dokumentácia pre stavebné povolenie aj realizáciu.',
+      'Architektonický návrh a koordinácia profesií (statika, elektro, voda, kúrenie, energetika).',
+      'Odborné podklady a vedenie procesom — vysvetlíme, čo a kedy treba.'
+    ])+'<span class="mini">Podanie na úrade si rieši klient; my pripravíme projekt a podklady.</span>'));
+    next([{t:'Úradné postupy',ic:I.steps,fn:()=>topic('uradne')},RESV]);
+  },
+  /* Mám pozemok alebo stavbu — čo ďalej */
+  start(){
+    botMsg('Poviete mi, čo máte v pláne, a nasmerujem vás na ďalší krok.');
+    next([
+      {t:'Novostavba domu',fn:()=>topic('sp')},
+      {t:'Rekonštrukcia',fn:()=>{ botMsg('Pri rekonštrukcii podľa rozsahu zásahu ide o <b>ohlásenie</b> alebo <b>stavebné povolenie</b>.'); next([{t:'Ohlásenie',ic:I.steps,fn:()=>topic('od')},{t:'Stavebné povolenie',ic:I.steps,fn:()=>topic('sp')},RESV]); }},
+      {t:'Prístavba / nadstavba',fn:()=>topic('zmena')},
+      {t:'Menšia stavba (garáž, plot)',fn:()=>topic('od')},
+      {t:'Kúpa pozemku',fn:()=>{ botMsg(infoBlock('Pred kúpou pozemku','Najprv si na obci overte <b>územný plán</b> a regulatívy (či a ako sa dá stavať). Pripravím vám text žiadosti o územnoplánovaciu informáciu.')); next([{t:'Čo napísať na obec?',ic:I.mail,fn:()=>flowLetter('obec_uzemny')},RESV]); }},
+      RESV
+    ]);
+  },
+  konz(){ flowCalendar(); },
+  kb(){ flowKB(); }
+};
+
+/* ——— sticky pätička: rezervácia + rýchle kontakty ——— */
+function footResv(){ userMsg('Rezervovať konzultáciu'); typing(flowCalendar); }
+function renderFoot(){
+  const f=document.getElementById('ai-foot');
+  const acts=[
+    {t:'Zavolať',svg:I.phone,href:'tel:'+CFG.telefonRaw},
+    {t:'E-mail',svg:I.mail,href:'mailto:'+CFG.email},
+    {t:'WhatsApp',svg:I.wa,href:'https://wa.me/'+CFG.whatsapp}
+  ];
+  const resv=el(`<button class="foot-resv">${I.cal}<span>Rezervovať konzultáciu</span></button>`);
+  resv.onclick=footResv;
+  const row=el('<div class="ai-contacts"></div>');
+  acts.forEach(a=>row.appendChild(el(`<a class="qa" href="${a.href}" target="_blank" rel="noopener">${a.svg}<span>${a.t}</span></a>`)));
+  f.innerHTML=''; f.appendChild(resv); f.appendChild(row);
+}
+renderFoot();
 
 /* ============ 1) SPRIEVODCA: ZISTIŤ ČO POTREBUJEM ============ */
 const need={};
@@ -508,7 +726,7 @@ function flowSteps(){
     {t:'Pripraviť text na obec (krok 2)',ic:I.mail,primary:true,fn:()=>flowLetter('obec_uzemny')},
     {t:'Checklist dokumentov',ic:I.list,fn:()=>flowChecklist()},
     {t:'Konzultovať s projektantom',ic:I.cal,fn:flowCalendar},
-    {t:'↩ Späť',fn:menu}
+    {t:'Späť na menu',fn:menu}
   ]),560);
 }
 
@@ -549,7 +767,7 @@ function letterForm(key){
       ? `<div class="field"><label>${f}</label><textarea data-f="${i}" placeholder="${f}…"></textarea></div>`
       : `<div class="field"><label>${f}</label><input data-f="${i}" placeholder="${f}…"></div>`;
   });
-  h+=`<button class="btn-go">Vygenerovať text ✍</button></div></div>`;
+  h+=`<button class="btn-go">Vygenerovať text</button></div></div>`;
   const m=botMsg(h);
   const panel=m.querySelector('[data-letter]');
   panel.querySelector('.btn-go').onclick=()=>{
@@ -567,11 +785,11 @@ function copyBlock(text){
     const btn=document.getElementById(id);
     if(btn) btn.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(text);btn.textContent='Skopírované ✓';btn.classList.add('done');};
     const mb=document.getElementById(id+'m');
-    if(mb) mb.onclick=()=>botMsg('Otvorenie poštového klienta je v ostrej verzii. <span class="mini">Demo režim — e-mail sa neodosiela.</span>');
+    if(mb) mb.onclick=()=>{ window.location.href='mailto:?body='+encodeURIComponent(text); };
   },30);
   return `<div class="copybox">${esc(text)}</div>
     <div class="copyrow"><button class="cp-copy" id="${id}">Skopírovať text</button><button class="cp-mail" id="${id}m">Otvoriť e-mail</button></div>
-    <span class="mini">Demo: text si skopírujete a pošlete zo svojej schránky. Aplan nevybavuje úrad za vás — pomáha s projektom a podkladmi.</span>`;
+    <span class="mini">Text si skopírujte a odošlite zo svojej e-mailovej schránky.</span>`;
 }
 
 /* ============ 4) PROJEKTOVÝ ŠTARTOVACÍ BALÍK ============ */
@@ -603,7 +821,7 @@ function pkgForm(){
     <div class="row2"><div class="field"><label>Parcelné číslo</label><input data-f="parc" placeholder="napr. 1234/5"></div>
     <div class="field"><label>Vaše meno</label><input data-f="meno" placeholder="Meno Priezvisko"></div></div>
     <div class="field"><label>Stručný popis zámeru</label><textarea data-f="popis" placeholder="Čo plánujete, rozsah, predstava…"></textarea></div>
-    <button class="btn-go">Vytvoriť štartovací balík 🚀</button></div></div>`);
+    <button class="btn-go">Vytvoriť štartovací balík</button></div></div>`);
   const p=m.querySelector('[data-pkg]');
   p.querySelector('.btn-go').onclick=()=>{
     pkg.obec=val(p,'obec');pkg.parc=val(p,'parc');pkg.meno=val(p,'meno');pkg.popis=val(p,'popis');
@@ -611,6 +829,8 @@ function pkgForm(){
   };
 }
 function val(scope,f){const e=scope.querySelector(`[data-f="${f}"]`);return e?e.value.trim():'';}
+function gdprField(){return `<label class="gdpr"><input type="checkbox" data-f="gdpr"><span>Súhlasím so spracovaním osobných údajov za účelom spracovania dopytu. <a href="${CFG.gdprUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Viac</a></span></label>`;}
+function mailLink(subject,lines){return `mailto:${CFG.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.filter(x=>x!==undefined&&x!==null).join('\n'))}`;}
 function pkgResult(){
   const O=pkg.obec||'[OBEC]', P=pkg.parc||'[PARCELA]', M=pkg.meno||'[MENO]';
   const mailObec=`Dobrý deň,\n\nchcel by som si overiť možnosti výstavby na pozemku v obci ${O}, parcelné číslo ${P}. Prosím o informáciu, či je pozemok podľa územného plánu určený na výstavbu a aké základné regulatívy sa naň vzťahujú (odstupy, zastavanosť, výška, tvar strechy, napojenie na siete).\n\nĎakujem.\nS pozdravom,\n${M}`;
@@ -640,27 +860,28 @@ function pkgResult(){
       <button class="btn-ghost">Skopírovať celý balík</button></div></div>`);
     const s=m.querySelector('[data-pkgsend]');
     s.querySelector('.btn-go').onclick=()=>typing(()=>{
-      botMsg(`<div class="confirm"><div class="ci">✅ Balík je pripravený${'<span class=\"demo-tag\">demo</span>'}</div><div class="cb">Toto je ukážka. Pri reálnom nasadení by sa balík odoslal na zadaný e-mail a kópia firme Aplan.</div></div>`);
+      botMsg(`<div class="confirm"><div class="ci">Balík je pripravený</div><div class="cb">Poslali sme vám ho na zadaný e-mail a kópiu sme odoslali aj nám. Ozveme sa vám s ďalšími krokmi.</div></div>`);
       backMenu();
     });
-    s.querySelector('.btn-ghost').onclick=()=>{const all=[mailObec,'',mailAplan].join('\n');navigator.clipboard&&navigator.clipboard.writeText(all);botMsg('Balík skopírovaný do schránky. <span class="mini">Demo režim.</span>');};
+    s.querySelector('.btn-ghost').onclick=()=>{const all=[mailObec,'',mailAplan].join('\n');navigator.clipboard&&navigator.clipboard.writeText(all);botMsg('Balík skopírovaný do schránky.');};
   },400);
 }
 function miniList(items){return '<ul style="margin:0">'+items.map(i=>`<li style="font:600 12.5px/1.5 var(--font)">${i}</li>`).join('')+'</ul>';}
 
-/* ============ 5) FAKE DEMO KALENDÁR ============ */
+/* ============ 5) KALENDÁR — REZERVÁCIA ============ */
 const booking={};
 function flowCalendar(){
   booking.type=null;booking.day=null;booking.time=null;
-  botMsg('Rezervácia konzultácie. <span class="demo-tag">demo kalendár</span><span class="mini">Vyberte typ stretnutia, termín a čas — ukážeme priebeh. Termín sa reálne nikam neodosiela.</span>');
-  const m=botMsg(`<div class="panel"><div class="panel-h"><span class="pin"></span>1 · Typ stretnutia</div><div class="panel-b" data-cal>
+  botMsg('<b>Rezervácia konzultácie</b> — vyberte typ stretnutia, termín a čas.');
+  const m=botMsg(`<div class="cal-card" data-cal>
+    <div class="cal-l">Typ stretnutia</div>
     <div class="cal-types">
-      <div class="cal-type" data-t="Osobná konzultácia"><div class="tt">🏛 Osobná</div><div class="td">v kancelárii Aplan · 45 min</div></div>
-      <div class="cal-type" data-t="Telefonická konzultácia"><div class="tt">📞 Telefonická</div><div class="td">zavoláme vám · 20 min</div></div>
-      <div class="cal-type" data-t="Online konzultácia"><div class="tt">💻 Online</div><div class="td">video hovor · 30 min</div></div>
-      <div class="cal-type" data-t="Úvodné posúdenie zámeru"><div class="tt">📐 Posúdenie</div><div class="td">prvotné zhodnotenie · 30 min</div></div>
+      <div class="cal-type" data-t="Osobná konzultácia"><div class="ctt"><div class="tt">Osobná konzultácia</div><div class="td">v kancelárii Aplan · 45 min</div></div><span class="rad"></span></div>
+      <div class="cal-type" data-t="Telefonická konzultácia"><div class="ctt"><div class="tt">Telefonická konzultácia</div><div class="td">zavoláme vám · 20 min</div></div><span class="rad"></span></div>
+      <div class="cal-type" data-t="Online konzultácia"><div class="ctt"><div class="tt">Online konzultácia</div><div class="td">cez video hovor · 30 min</div></div><span class="rad"></span></div>
+      <div class="cal-type" data-t="Úvodné posúdenie zámeru"><div class="ctt"><div class="tt">Úvodné posúdenie zámeru</div><div class="td">prvotné zhodnotenie · 30 min</div></div><span class="rad"></span></div>
     </div>
-    <div data-calstage></div></div></div>`);
+    <div data-calstage></div></div>`);
   const p=m.querySelector('[data-cal]');
   p.querySelectorAll('.cal-type').forEach(c=>c.onclick=()=>{
     p.querySelectorAll('.cal-type').forEach(x=>x.classList.remove('on'));
@@ -674,7 +895,7 @@ function renderCalDays(stage){
   const y=today.getFullYear(),mo=today.getMonth();
   const first=new Date(y,mo,1); let startIdx=(first.getDay()+6)%7;
   const daysInMonth=new Date(y,mo+1,0).getDate();
-  let h=`<div style="font:800 13px var(--font);margin:12px 0 8px">2 · Vyberte deň — <span style="color:var(--accent-2)">jún 2026</span></div><div class="cal-grid">`;
+  let h=`<div class="cal-l">Termín</div><div class="cal-head"><div class="cal-month">jún 2026</div></div><div class="cal-grid">`;
   dow.forEach(d=>h+=`<div class="cal-dow">${d}</div>`);
   for(let i=0;i<startIdx;i++)h+='<div class="cal-day off"></div>';
   for(let d=1;d<=daysInMonth;d++){
@@ -693,7 +914,7 @@ function renderCalDays(stage){
 }
 function renderCalTimes(t){
   const times=['08:30','09:30','11:00','13:00','14:30','16:00'];
-  let h='<div style="font:800 13px var(--font);margin:12px 0 6px">3 · Vyberte čas</div><div class="cal-times">';
+  let h='<div class="cal-l">Čas</div><div class="cal-times">';
   times.forEach(x=>h+=`<div class="cal-time" data-x="${x}">${x}</div>`);
   h+='</div>';
   t.innerHTML=h;
@@ -704,20 +925,30 @@ function renderCalTimes(t){
   });
 }
 function calContact(){
-  const m=botMsg(`<div class="panel"><div class="panel-h"><span class="pin"></span>4 · Vaše údaje</div><div class="panel-b" data-calc>
+  const m=botMsg(`<div class="cal-card" data-calc>
+    <div class="cal-l">Vaše údaje</div>
     <div class="row2"><div class="field"><label>Meno</label><input data-f="meno" placeholder="Meno Priezvisko"></div>
     <div class="field"><label>Telefón</label><input data-f="tel" placeholder="+421…"></div></div>
     <div class="field"><label>E-mail</label><input data-f="em" placeholder="vas@email.sk"></div>
     <div class="field"><label>Obec / lokalita stavby</label><input data-f="obec" placeholder="napr. Stupava"></div>
     <div class="field"><label>Stručný popis zámeru</label><textarea data-f="popis" placeholder="Pár viet o tom, čo riešite…"></textarea></div>
-    <button class="btn-go">Predbežne rezervovať termín</button></div></div>`);
+    ${gdprField()}
+    <button class="btn-go">Rezervovať termín</button></div>`);
   const p=m.querySelector('[data-calc]');
   p.querySelector('.btn-go').onclick=()=>{
-    booking.meno=val(p,'meno');
+    booking.meno=val(p,'meno');const tel=val(p,'tel'),em=val(p,'em');
+    if(!booking.meno||!tel){ botMsg('Prosím vyplňte meno a telefón.'); return; }
+    if(!p.querySelector('[data-f="gdpr"]').checked){ botMsg('Prosím potvrďte súhlas so spracovaním osobných údajov.'); return; }
+    const lines=['Rezervácia konzultácie — '+CFG.firma,'',
+      'Typ stretnutia: '+booking.type,'Termín: '+booking.day+' o '+booking.time,
+      'Meno: '+booking.meno,'Telefón: '+tel,'E-mail: '+em,
+      'Lokalita stavby: '+val(p,'obec'),'','Popis zámeru:','  '+val(p,'popis')];
+    const link=mailLink('Rezervácia konzultácie — '+CFG.firma, lines);
     typing(()=>{
-      botMsg(`<div class="confirm"><div class="ci">✅ Termín je predbežne rezervovaný<span class="demo-tag">demo</span></div>
-        <div class="cb"><b>${esc(booking.type)}</b><br>${esc(booking.day)} · ${esc(booking.time)}<br>${booking.meno?('na meno '+esc(booking.meno)):''}<br><br>
-        Toto je ukážková rezervácia v demo režime. Pri reálnom nasadení by sa termín odoslal firme Aplan alebo zapísal do kalendára.</div></div>`);
+      botMsg(`<div class="confirm"><div class="ci">Termín je rezervovaný</div>
+        <div class="cb"><b>${esc(booking.type)}</b><br>${esc(booking.day)} · ${esc(booking.time)}${booking.meno?('<br>na meno '+esc(booking.meno)):''}<br><br>
+        Potvrďte odoslaním e-mailom — ozveme sa vám.</div>
+        <a class="confirm-send" href="${link}">Potvrdiť termín e-mailom</a></div>`);
       backMenu();
     },1000);
   };
@@ -752,7 +983,7 @@ function flowChecklist(typ){
   setTimeout(()=>chipRow([
     {t:'Vytvoriť správu na úrad',ic:I.mail,primary:true,fn:flowLetter},
     {t:'Rezervovať konzultáciu',ic:I.cal,fn:flowCalendar},
-    {t:'↩ Späť',fn:menu}
+    {t:'Späť na menu',fn:menu}
   ]),300);
 }
 
@@ -773,38 +1004,272 @@ function flowLead(){
     <div class="field"><label>Stará dokumentácia?</label><select data-f="dok"><option>Nemám</option><option>Mám čiastočne</option><option>Mám</option></select></div>
     <div class="field"><label>Krátky popis zámeru</label><textarea data-f="popis" placeholder="Čo plánujete…"></textarea></div>
     <div class="field"><label>Prílohy (foto, LV, kataster)</label>
-      <div style="border:1.5px dashed var(--line-2);border-radius:11px;padding:13px;text-align:center;font:600 12px var(--font);color:var(--muted);cursor:pointer" onclick="botMsg('Nahrávanie príloh sa doplní v ostrej verzii. <span class=\\'mini\\'>Demo režim.</span>')">📎 Nahrať súbory <span class="demo-tag">čoskoro</span></div></div>
+      <div style="border:1.5px dashed var(--line-2);border-radius:11px;padding:13px;text-align:center;font:600 12px var(--font);color:var(--muted);cursor:pointer" onclick="botMsg('Súbory sa pripoja k vášmu dopytu — môžete ich priložiť aj neskôr e-mailom.')">Priložiť súbory (foto, list vlastníctva, kataster)</div></div>
+    ${gdprField()}
     <button class="btn-go">Pripraviť a odoslať dopyt</button></div></div>`);
   const p=m.querySelector('[data-lead]');
-  p.querySelector('.btn-go').onclick=()=>typing(()=>{
-    const meno=val(p,'meno');
-    botMsg(`<div class="confirm"><div class="ci">✅ Ďakujeme${meno?', '+esc(meno):''}!<span class="demo-tag">demo</span></div>
-      <div class="cb">Dopyt bol pripravený na odoslanie firme Aplan. Na základe údajov vás bude možné lepšie nasmerovať a pripraviť prvotnú konzultáciu.<br><br>Toto je ukážka — v reálnej verzii by dopyt prišiel na e-mail Aplanu a do interného prehľadu.</div></div>`);
-    backMenu();
-  },1000);
+  p.querySelector('.btn-go').onclick=()=>{
+    const meno=val(p,'meno'),tel=val(p,'tel'),em=val(p,'em');
+    if(!meno||!tel||!em){ botMsg('Prosím vyplňte meno, telefón a e-mail (povinné polia).'); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ botMsg('Prosím zadajte platný e-mail.'); return; }
+    if(!p.querySelector('[data-f="gdpr"]').checked){ botMsg('Prosím potvrďte súhlas so spracovaním osobných údajov.'); return; }
+    const lines=['Nový dopyt z webu — '+CFG.firma,'',
+      'Meno: '+meno,'Telefón: '+tel,'E-mail: '+em,
+      'Lokalita stavby: '+val(p,'lok'),'Typ projektu: '+val(p,'typ'),'Pozemok: '+val(p,'poz'),
+      'Parcelné číslo: '+val(p,'parc'),'Komunikácia s úradom: '+val(p,'urad'),
+      'Časový plán: '+val(p,'cas'),'Stará dokumentácia: '+val(p,'dok'),'',
+      'Popis zámeru:','  '+val(p,'popis')];
+    const link=mailLink('Dopyt z webu — '+CFG.firma, lines);
+    typing(()=>{
+      botMsg(`<div class="confirm"><div class="ci">Ďakujeme, ${esc(meno)}!</div>
+        <div class="cb">Dopyt je pripravený. Kliknutím nižšie ho odošlete e-mailom — ozveme sa vám čo najskôr.</div>
+        <a class="confirm-send" href="${link}">Odoslať dopyt e-mailom</a></div>`);
+      backMenu();
+    },900);
+  };
 }
 
-/* ============ jednoduchý "free text" — scenárovaná odpoveď ============ */
+/* =========================================================
+   VEDOMOSTNÁ BÁZA — kompletný rozbor toho, čo môže klient
+   hľadať. Dáta sú v jednom poli (ľahko spravovateľné a
+   rozšíriteľné). Každá téma: kategória, názov, kľúčové slová,
+   vysvetlenie a súvisiace akcie/témy.
+   ========================================================= */
+const CATS=[
+  {id:'sluzby',   t:'Služby a typy projektov', d:'Čo vieme spracovať',        ic:I.pkg},
+  {id:'postup',   t:'Postupy krok za krokom',  d:'Ako na to, v bodoch',       ic:I.steps},
+  {id:'pojmy',    t:'Pojmy a skratky',         d:'Čo znamená…',               ic:I.book},
+  {id:'faq',      t:'Časté otázky',            d:'Rýchle, jasné odpovede',    ic:I.faq},
+  {id:'dokumenty',t:'Dokumenty a checklisty',  d:'Čo si pripraviť',           ic:I.list}
+];
+
+const KB=[
+/* ——— SLUŽBY / TYPY PROJEKTOV ——— */
+{id:'rd',cat:'sluzby',title:'Projekt rodinného domu (novostavba)',tags:'rodinný dom novostavba projekt domu stavať dom rd bungalov poschodový',
+ body:'Spracujeme projektovú dokumentáciu novostavby rodinného domu — od osadenia na pozemok cez dispozíciu až po podklady pre stavebné povolenie a realizáciu. Súčasťou býva architektonicko-stavebná časť a podľa potreby profesie (statika, elektro, voda, kúrenie, energetika).<span class="mini">Rozsah a obsah vždy prispôsobíme vášmu pozemku a regulatívom obce.</span>',
+ rel:['act:need','topic:stupne','topic:profesie','act:cal']},
+{id:'rekon',cat:'sluzby',title:'Projekt rekonštrukcie',tags:'rekonštrukcia obnova prerábka prerobiť starý dom byt modernizácia',
+ body:'Pri rekonštrukcii navrhneme zmeny dispozície, konštrukčné riešenia a podklady podľa rozsahu zásahu. Ak ide o zásah do nosných konštrukcií alebo vonkajšieho vzhľadu, býva potrebné ohlásenie alebo stavebné povolenie.<span class="mini">Veľmi pomôže pôvodná projektová dokumentácia, ak ju máte.</span>',
+ rel:['topic:povolenie-vs-ohlaska','act:checklist','act:cal']},
+{id:'pristavba',cat:'sluzby',title:'Prístavba a nadstavba',tags:'prístavba nadstavba rozšírenie domu pristavať poschodie zväčšiť dom',
+ body:'Prístavba (rozšírenie do strán) aj nadstavba (nadstavanie ďalšieho podlažia) sú zásahom do existujúcej stavby — typicky vyžadujú projekt a stavebné povolenie. Posudzuje sa statika, napojenie na pôvodnú stavbu aj dodržanie regulatívov.<span class="mini">Orientačne — presný režim závisí od rozsahu a od stavebného úradu.</span>',
+ rel:['topic:zastavanost','topic:odstupy','act:need','act:cal']},
+{id:'drobne',cat:'sluzby',title:'Drobné a menšie stavby (garáž, altánok, prístrešok, plot, bazén)',tags:'garáž altánok prístrešok plot bazén drobná stavba kôlňa sklad pergola',
+ body:'Pri menších stavbách často postačuje jednoduchšia dokumentácia a ohlásenie, no závisí to od veľkosti, umiestnenia a miestnych pravidiel. Pripravíme primeraný rozsah podkladov.<span class="mini">Či ide o „drobnú stavbu" a aký režim platí, odporúčame overiť na stavebnom úrade.</span>',
+ rel:['topic:povolenie-vs-ohlaska','topic:ohlaska','act:letter']},
+{id:'legalizacia',cat:'sluzby',title:'Dodatočná legalizácia stavby',tags:'legalizácia načierno dodatočné povolenie nepovolená stavba dodatočná legalizácia',
+ body:'Pri stavbe, ktorá nemá povolenie, je zvyčajne potrebné zameranie skutočného stavu a dodatočná dokumentácia pre dodatočné konanie. Býva to náročnejší prípad závislý od konkrétnej situácie a úradu.<span class="mini">Pripravíme dokumentáciu a podklady; samotné konanie vediete s úradom vy.</span>',
+ rel:['topic:postup-legalizacia','act:checklist','act:cal']},
+{id:'zmena-ucelu',cat:'sluzby',title:'Zmena účelu užívania',tags:'zmena účelu užívania prevádzka z bytu kancelária prevádzkáreň zmena využitia',
+ body:'Ak chcete priestor využívať inak, než na čo bol skolaudovaný (napr. byt na prevádzku), býva potrebná dokumentácia a súhlas úradu. Posudzujú sa hygienické, požiarne a iné požiadavky.<span class="mini">Pripravíme podklady; rozsah závisí od nového účelu.</span>',
+ rel:['act:cal','act:lead']},
+{id:'studia',cat:'sluzby',title:'Architektonická štúdia',tags:'štúdia architektonická štúdia návrh vizualizácia idea koncept',
+ body:'Štúdia je úvodný návrh — overí dispozíciu, hmotu a osadenie ešte pred detailným projektom. Je ideálna, keď ladíte predstavu alebo overujete možnosti pozemku.<span class="mini">Na štúdiu zvyčajne nadväzuje dokumentácia pre povolenie a realizáciu.</span>',
+ rel:['topic:stupne','act:cal']},
+{id:'stupne',cat:'sluzby',title:'Stupne projektovej dokumentácie',tags:'stupne dokumentácie štúdia dur dsp drs realizačný projekt rozsah projektu',
+ body:'Dokumentácia má zvyčajne niekoľko stupňov:<ul><li><b>Štúdia</b> — úvodný návrh a koncept.</li><li><b>DÚR</b> — pre územné rozhodnutie (osadenie, vzťahy k okoliu).</li><li><b>DSP</b> — pre stavebné povolenie.</li><li><b>DRS</b> — realizačná dokumentácia pre samotnú stavbu.</li></ul><span class="mini">Nie každý projekt potrebuje všetky stupne — záleží od typu a rozsahu.</span>',
+ rel:['topic:dur-dsp-drs','topic:profesie','act:cal']},
+{id:'profesie',cat:'sluzby',title:'Profesie v projekte (statika, elektro, voda, kúrenie…)',tags:'profesie statika elektro zdravotechnika zti kúrenie vykurovanie vzduchotechnika energetika',
+ body:'Podľa rozsahu projekt koordinuje viaceré profesie: architektonicko-stavebná časť, statika, elektroinštalácie, zdravotechnika (voda a kanalizácia), vykurovanie, prípadne vzduchotechnika a energetické hodnotenie.<span class="mini">Ktoré profesie sú potrebné, závisí od konkrétnej stavby.</span>',
+ rel:['topic:energetika','topic:pripojky','act:cal']},
+{id:'energetika',cat:'sluzby',title:'Energetické hodnotenie a certifikát',tags:'energetika energetický certifikát hodnotenie spotreba úspora a0 nízkoenergetický pasívny',
+ body:'Projektové energetické hodnotenie posudzuje energetickú hospodárnosť budovy a býva súčasťou dokumentácie novostavby. Energetický certifikát sa zvyčajne dokladá ku kolaudácii.<span class="mini">Orientačne — požiadavky závisia od typu a roku výstavby.</span>',
+ rel:['topic:kolaudacia','act:cal']},
+{id:'pripojky',cat:'sluzby',title:'Projekt prípojok (voda, kanalizácia, elektrina, plyn)',tags:'prípojky voda kanalizácia elektrina plyn napojenie siete studňa žumpa čov',
+ body:'K stavbe patrí aj napojenie na inžinierske siete. Pripravíme podklady k prípojkám podľa dostupnosti sietí a podmienok ich správcov.<span class="mini">Vyjadrenia správcov sietí si zvyčajne zabezpečuje stavebník.</span>',
+ rel:['topic:dotknute-organy','act:checklist']},
+{id:'interier',cat:'sluzby',title:'Návrh interiéru',tags:'interiér dizajn interiéru zariadenie nábytok vizualizácia interiéru',
+ body:'Okrem stavebnej časti vieme riešiť aj návrh interiéru — dispozičné riešenie, materiály a atmosféru priestoru.<span class="mini">Rozsah dohodneme podľa vašich predstáv.</span>',
+ rel:['act:cal','act:lead']},
+{id:'typovy',cat:'sluzby',title:'Typový vs. individuálny projekt',tags:'typový projekt individuálny katalógový projekt rozdiel ktorý vybrať',
+ body:'<b>Typový (katalógový)</b> projekt je hotový návrh, ktorý sa osadí na pozemok a doplní o osadenie a prípojky — býva rýchlejší a lacnejší. <b>Individuálny</b> projekt sa robí na mieru pozemku a vašim potrebám.<span class="mini">Aj typový projekt treba osadiť a prispôsobiť konkrétnemu pozemku.</span>',
+ rel:['act:need','act:cal']},
+
+/* ——— POSTUPY ——— */
+{id:'postup-od-nuly',cat:'postup',title:'Idem stavať dom — ako začať od nuly',tags:'ako začať stavať dom od nuly prvé kroky neviem kde začať postup stavby',
+ body:'Orientačný štart:<ul><li>1 · Ujasnite si pozemok (alebo jeho kúpu) a rozpočtovú predstavu.</li><li>2 · Na obci overte územný plán a regulatívy.</li><li>3 · Konzultácia s projektantom — čo je možné a aký rozsah projektu.</li><li>4 · Štúdia / návrh a následne dokumentácia pre povolenie.</li><li>5 · Vyjadrenia, podanie na úrad, realizácia, kolaudácia.</li></ul>',
+ rel:['act:pkg','act:need','topic:postup-pozemok','act:cal']},
+{id:'postup-pozemok',cat:'postup',title:'Pred kúpou pozemku — čo overiť',tags:'kúpa pozemku pozemok pred kúpou overiť stavebný pozemok parcela orná pôda',
+ body:'Pred kúpou odporúčame overiť:<ul><li>či je pozemok podľa <b>územného plánu</b> určený na výstavbu,</li><li>regulatívy (zastavanosť, odstupy, výška, tvar strechy),</li><li>prístupovú cestu a dostupnosť sietí,</li><li>vlastnícke vzťahy a vecné bremená v liste vlastníctva.</li></ul><span class="mini">Vieme pripraviť úvodné posúdenie možností pozemku.</span>',
+ rel:['topic:upi','topic:lv','act:letter','act:cal']},
+{id:'postup-povolenie',cat:'postup',title:'Postup pri stavebnom povolení',tags:'stavebné povolenie postup ako vybaviť povolenie kroky konanie',
+ body:'Krokový postup vám prejde asistent — od informácií o pozemku, cez overenie možností a projekt, až po vyjadrenia a podanie na úrad.',
+ rel:['act:steps','act:checklist','act:letter']},
+{id:'ohlaska',cat:'postup',title:'Ohlásenie (drobnej) stavby — postup',tags:'ohláška ohlásenie drobná stavba postup čo treba k ohláseniu',
+ body:'Pri ohlásení sa úradu oznámi zámer s prílohami a počká sa na jeho stanovisko. Postačuje pri menších stavbách a niektorých úpravách — záleží od miestnych pravidiel.<span class="mini">Či stačí ohlásenie alebo treba povolenie, je vhodné overiť na úrade.</span>',
+ rel:['topic:povolenie-vs-ohlaska','act:letter']},
+{id:'postup-rekon',cat:'postup',title:'Postup pri rekonštrukcii',tags:'rekonštrukcia postup ako na rekonštrukciu kroky obnova',
+ body:'Orientačne: zameranie a posúdenie pôvodného stavu → návrh zmien → dokumentácia v primeranom rozsahu → podľa zásahu ohlásenie alebo povolenie → realizácia.<span class="mini">Zásah do nosných konštrukcií zvyčajne vyžaduje projekt a súhlas úradu.</span>',
+ rel:['topic:rekon','act:checklist','act:cal']},
+{id:'postup-legalizacia',cat:'postup',title:'Postup pri dodatočnej legalizácii',tags:'legalizácia postup ako legalizovať dodatočné konanie zameranie',
+ body:'Orientačne: zameranie skutočného stavu → dodatočná projektová dokumentácia → potrebné vyjadrenia → dodatočné konanie na úrade.<span class="mini">Ide o náročnejší prípad; výsledok závisí od konkrétnej situácie a úradu.</span>',
+ rel:['topic:legalizacia','act:checklist','act:cal']},
+{id:'kolaudacia',cat:'postup',title:'Kolaudácia — čo to je a kedy',tags:'kolaudácia kolaudovať dokončenie stavby užívanie skolaudovať',
+ body:'Kolaudácia je proces, ktorým úrad povolí stavbu užívať po jej dokončení. Dokladajú sa pri nej napr. revízie, energetický certifikát či geometrický plán.<span class="mini">Presný zoznam dokladov určuje stavebný úrad.</span>',
+ rel:['topic:energetika','act:checklist']},
+
+/* ——— POJMY / GLOSÁR ——— */
+{id:'uzemny-plan',cat:'pojmy',title:'Územný plán a regulatívy',tags:'územný plán regulatívy čo môžem stavať funkčné využitie zóna',
+ body:'Územný plán obce určuje, ako sa dá pozemok využiť a aké pravidlá (regulatívy) platia — napr. typ zástavby, výška, odstupy či zastavanosť. Je to prvá vec, ktorú treba overiť pred projektom.',
+ rel:['topic:upi','topic:zastavanost','act:letter']},
+{id:'zastavanost',cat:'pojmy',title:'Index zastavanosti a koeficient zelene',tags:'zastavanosť index zastavanosti koeficient zelene koľko môžem zastavať plocha',
+ body:'<b>Index zastavanosti</b> hovorí, akú časť pozemku smiete zastavať. <b>Koeficient zelene</b> určuje, koľko plochy musí zostať zelenej. Obe ovplyvňujú veľkosť domu, ktorý je na pozemku možný.',
+ rel:['topic:uzemny-plan','topic:odstupy','act:cal']},
+{id:'odstupy',cat:'pojmy',title:'Odstupové vzdialenosti',tags:'odstupy odstupové vzdialenosti od hranice od suseda vzdialenosť stavby',
+ body:'Odstupy sú minimálne vzdialenosti stavby od hraníc pozemku a od susedných stavieb. Ovplyvňujú umiestnenie a veľkosť domu a posudzujú sa pri povoľovaní.<span class="mini">Konkrétne hodnoty závisia od situácie a miestnych pravidiel.</span>',
+ rel:['topic:zastavanost','act:cal']},
+{id:'lv',cat:'pojmy',title:'List vlastníctva (LV)',tags:'list vlastníctva lv kto vlastník bremená ťarchy doklad o vlastníctve',
+ body:'List vlastníctva preukazuje, kto je vlastníkom pozemku alebo stavby, a obsahuje aj ťarchy či vecné bremená. Je základným podkladom k projektu aj ku konaniu.',
+ rel:['topic:kataster','act:checklist']},
+{id:'kataster',cat:'pojmy',title:'Katastrálna mapa a parcelné číslo',tags:'kataster katastrálna mapa parcelné číslo parcela tvar pozemku zbgis',
+ body:'Katastrálna mapa zobrazuje tvar, polohu a hranice parcely a susedné pozemky. Parcelné číslo pozemok jednoznačne identifikuje — budete ho potrebovať pri každej komunikácii o pozemku.',
+ rel:['topic:lv','act:letter']},
+{id:'upi',cat:'pojmy',title:'Územnoplánovacia informácia (ÚPI)',tags:'územnoplánovacia informácia upi informácia z obce čo sa dá stavať vyjadrenie obce',
+ body:'ÚPI je informácia z obce o tom, či a ako sa dá na konkrétnom pozemku stavať podľa územného plánu. Je to dobrý prvý krok pred kúpou pozemku aj pred projektom.<span class="mini">Vieme vám pripraviť text žiadosti na obec.</span>',
+ rel:['act:letter','topic:uzemny-plan','act:cal']},
+{id:'povolenie-vs-ohlaska',cat:'pojmy',title:'Stavebné povolenie vs. ohlásenie',tags:'povolenie alebo ohláška rozdiel stačí ohlásenie kedy povolenie',
+ body:'<b>Ohlásenie</b> je jednoduchší režim pre menšie stavby a úpravy. <b>Stavebné povolenie</b> sa vyžaduje pri väčších a zložitejších stavbách. Ktorý režim platí pre váš zámer, závisí od jeho rozsahu a miestnych pravidiel.<span class="mini">Vieme pripraviť otázku na úrad, ktorá to ujasní.</span>',
+ rel:['act:letter','topic:ohlaska','act:need']},
+{id:'dotknute-organy',cat:'pojmy',title:'Dotknuté orgány a vyjadrenia',tags:'dotknuté orgány vyjadrenia správcovia sietí stanoviská úrady životné prostredie',
+ body:'Pri konaní môžu byť potrebné vyjadrenia rôznych inštitúcií — správcov sietí, obce, životného prostredia či dopravného úradu. Ktoré presne, závisí od typu stavby a lokality.<span class="mini">Vyjadrenia si zvyčajne zabezpečuje stavebník; my pripravíme podklady.</span>',
+ rel:['topic:pripojky','act:checklist']},
+{id:'dur-dsp-drs',cat:'pojmy',title:'Skratky DÚR, DSP, DRS',tags:'dur dsp drs skratky čo znamená dokumentácia pre územné rozhodnutie',
+ body:'<b>DÚR</b> — dokumentácia pre územné rozhodnutie. <b>DSP</b> — dokumentácia pre stavebné povolenie. <b>DRS</b> — dokumentácia pre realizáciu stavby.<span class="mini">Ktoré stupne potrebujete, závisí od typu zámeru.</span>',
+ rel:['topic:stupne','act:cal']},
+{id:'dozor',cat:'pojmy',title:'Stavebný dozor',tags:'stavebný dozor dozor svojpomocne kontrola stavby odborné vedenie',
+ body:'Stavebný dozor je odborná osoba, ktorá dohliada na priebeh stavby. Pri stavbe svojpomocou býva potrebný.<span class="mini">Ide o samostatnú rolu od projektanta.</span>',
+ rel:['topic:svojpomoc','act:cal']},
+
+/* ——— ČASTÉ OTÁZKY ——— */
+{id:'trvanie',cat:'faq',title:'Ako dlho trvá vypracovanie projektu?',tags:'ako dlho trvá projekt termín čas trvanie kedy hotové',
+ body:'Závisí od typu a rozsahu — štúdia býva rýchlejšia, kompletná dokumentácia pre povolenie trvá dlhšie kvôli koordinácii profesií. <b>Orientačný</b> termín radi povieme po krátkej konzultácii a po posúdení podkladov.',
+ rel:['act:cal','act:lead']},
+{id:'cena',cat:'faq',title:'Koľko stojí projekt?',tags:'cena koľko stojí cenník cenová ponuka náklady projekt rozpočet',
+ body:'Presnú cenu vopred nesľubujeme — závisí od typu stavby, rozsahu projektu, lokality, stavu dokumentov, potreby profesií a vyjadrení. <b>Orientačne</b> vieme ukázať náročnosť prípadu a pripraviť cenovú ponuku po konzultácii.',
+ rel:['act:need','act:cal','act:lead']},
+{id:'obsah',cat:'faq',title:'Čo všetko projekt obsahuje?',tags:'čo obsahuje projekt rozsah projektu čo dostanem výkresy',
+ body:'Projekt zvyčajne obsahuje architektonicko-stavebnú časť (situácia, pôdorysy, rezy, pohľady, technická správa) a podľa potreby profesie — statiku, elektro, zdravotechniku, kúrenie a energetické hodnotenie.<span class="mini">Konkrétny rozsah prispôsobíme zámeru.</span>',
+ rel:['topic:profesie','topic:stupne']},
+{id:'svojpomoc',cat:'faq',title:'Môžem stavať svojpomocne?',tags:'svojpomocne svojpomoc sám staviam vlastnými silami dozor',
+ body:'Pri mnohých rodinných domoch je stavba svojpomocou možná, no zvyčajne sa vyžaduje stavebný dozor. Projekt a podklady pripravíme tak, aby ste mali jasné zadanie.<span class="mini">Podmienky závisia od konkrétnej stavby a úradu.</span>',
+ rel:['topic:dozor','act:cal']},
+{id:'urady',cat:'faq',title:'Vybavíte mi úrady a povolenie?',tags:'vybavíte úrady povolenie za mňa inžiniering zastúpenie na úrade',
+ body:'Aplan je <b>projektová kancelária</b> — pripravíme projektovú dokumentáciu a odborné podklady a vysvetlíme postup. Komunikáciu a podania na úrade si vediete vy (alebo podľa dohody s odborníkom).<span class="mini">Asistent vám k tomu pripraví texty a checklisty.</span>',
+ rel:['act:letter','act:steps','act:checklist']},
+{id:'podklady',cat:'faq',title:'Aké podklady od vás potrebujem?',tags:'aké podklady potrebujem čo mám priniesť dokumenty od klienta',
+ body:'Najčastejšie: list vlastníctva, katastrálnu mapu / parcelné číslo, informáciu z obce, fotky pozemku alebo stavby, prípadne pôvodnú dokumentáciu a predstavu o dispozícii.<span class="mini">Presný zoznam vám pripraví checklist podľa typu prípadu.</span>',
+ rel:['act:checklist','act:pkg']},
+{id:'kde',cat:'faq',title:'Pôsobíte v celej SR?',tags:'kde pôsobíte celá sr lokalita región vzdialenosť online',
+ body:'Konzultácie vieme riešiť osobne aj online a podľa dohody pokryť rôzne lokality. Niektoré veci (obhliadka, miestne špecifiká) sa dohodnú individuálne.',
+ rel:['act:cal','act:lead']},
+{id:'zmeny',cat:'faq',title:'Dajú sa robiť zmeny počas projektu?',tags:'zmeny počas projektu úpravy návrhu pripomienky revízie',
+ body:'Áno — návrh spoločne ladíme, najmä vo fáze štúdie sú úpravy najjednoduchšie. Vo vyšších stupňoch sú zmeny rozsiahlejšie, preto sa oplatí doladiť koncept včas.',
+ rel:['topic:stupne','act:cal']}
+];
+
+/* ——— prehliadač vedomostnej bázy ——— */
+function flowKB(){
+  botMsg('Tu nájdete <b>kompletný prehľad</b> — služby, postupy, pojmy aj časté otázky. Vyberte oblasť, alebo dole napíšte, čo hľadáte (napr. <i>kolaudácia, prístavba, cena, územný plán</i>).');
+  const m=botMsg(`<div class="panel"><div class="panel-h"><span class="pin"></span>Oblasti</div><div class="panel-b" data-cats></div></div>`);
+  const wrap=m.querySelector('[data-cats]');
+  CATS.forEach(c=>{
+    const n=c.id==='dokumenty'?'' :` · ${KB.filter(k=>k.cat===c.id).length} tém`;
+    const row=el(`<button class="kbcat">${c.ic}<div><div class="kt">${c.t}</div><div class="kd">${c.d}${n}</div></div>${I.arrow}</button>`);
+    row.onclick=()=>{ userMsg(c.t); typing(()=> c.id==='dokumenty'?flowChecklist():showCat(c.id)); };
+    wrap.appendChild(row);
+  });
+  scroll();
+}
+function showCat(catId){
+  const c=CATS.find(x=>x.id===catId);
+  const items=KB.filter(k=>k.cat===catId);
+  botMsg(`<b>${c.t}</b> — vyberte tému:`);
+  chipRow(items.map(k=>({t:k.title,fn:()=>openTopic(k.id)})).concat([{t:'Späť na oblasti',fn:flowKB}]));
+}
+function openTopic(id){
+  const k=KB.find(x=>x.id===id); if(!k)return;
+  botMsg(`<div class="panel"><div class="panel-h"><span class="pin"></span>${k.title}</div><div class="panel-b" style="font:500 13px/1.55 var(--font);color:var(--ink-3)">${k.body}</div></div>`);
+  if(k.rel&&k.rel.length) setTimeout(()=>chipRow(resolveRel(k.rel)),260);
+}
+function resolveRel(rel){
+  const acts={
+    need:{t:'Zistiť, čo potrebujem',ic:I.search,fn:flowNeed},
+    steps:{t:'Postup pri povolení',ic:I.steps,fn:flowSteps},
+    letter:{t:'Vytvoriť správu na úrad',ic:I.mail,fn:flowLetter},
+    pkg:{t:'Projektový štartovací balík',ic:I.pkg,fn:flowPackage},
+    cal:{t:'Rezervovať konzultáciu',ic:I.cal,fn:flowCalendar},
+    checklist:{t:'Checklist dokumentov',ic:I.list,fn:()=>flowChecklist()},
+    lead:{t:'Poslať dopyt',ic:I.send,fn:flowLead}
+  };
+  const out=[];
+  rel.forEach(r=>{
+    if(r.startsWith('topic:')){const k=KB.find(x=>x.id===r.slice(6));if(k)out.push({t:k.title,fn:()=>openTopic(k.id)});}
+    else if(r.startsWith('act:')){const a=acts[r.slice(4)];if(a)out.push(a);}
+  });
+  out.push({t:'Témy',fn:flowKB});
+  return out;
+}
+function searchKB(q){
+  const s=q.toLowerCase().trim();
+  if(s.length<2) return [];
+  const words=s.split(/\s+/);
+  return KB.map(k=>{
+    const hay=(k.title+' '+k.tags+' '+k.cat).toLowerCase();
+    let score=0;
+    words.forEach(w=>{ if(hay.includes(w)) score+= k.title.toLowerCase().includes(w)?3:1; });
+    return {k,score};
+  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,6).map(x=>x.k);
+}
+
+/* ============ jednoduchý "free text" — vyhľadávanie + scenár ============ */
 function aiUserSend(){
   const t=input.value.trim(); if(!t)return;
   input.value='';userMsg(t);
   const s=t.toLowerCase();
   typing(()=>{
-    if(/povol|úrad|urad|ohlás|ohlas/.test(s)) flowSteps();
-    else if(/termín|termin|konzult|stretnut|kalend/.test(s)) flowCalendar();
-    else if(/list|dokument|prílo|prilo/.test(s)) flowChecklist();
-    else if(/dom|projekt|rekonštr|rekonstr|prístav|pristav/.test(s)) flowNeed();
-    else if(/cena|koľko|kolko|stojí|stoji/.test(s)){
-      botMsg('Presnú cenu vopred nesľubujeme — závisí od typu stavby, rozsahu projektu, lokality, stavu dokumentov, potreby profesií a vyjadrení úradov. <b>Orientačne</b> viem ukázať náročnosť a najlepší ďalší krok je krátka konzultácia.');
-      backMenu();
+    const hits=searchKB(s);
+    if(hits.length){
+      if(hits.length===1){ openTopic(hits[0].id); return; }
+      botMsg(`Našiel som ${hits.length} tém k „<b>${esc(t)}</b>". Vyberte, čo sedí:`);
+      chipRow(hits.map(k=>({t:k.title,fn:()=>openTopic(k.id)})).concat([{t:'Prehľadať všetky témy',ic:I.book,fn:flowKB}]));
+      return;
     }
-    else { botMsg('Rozumiem. Skúsme to zúžiť — vyberte, čo sa hodí:'); setTimeout(()=>menu(),200); }
+    if(/termín|termin|konzult|stretnut|kalend|rezerv/.test(s)){ flowCalendar(); return; }
+    if(/správ|sprav|napís|napis|e-?mail.*úrad|list úradu/.test(s)){ flowLetter(); return; }
+    if(/dopyt|kontakt|ozvite|zavolaj/.test(s)){ flowLead(); return; }
+    if(/balík|balik|štartov|startov/.test(s)){ flowPackage(); return; }
+    if(/chýbaj|chybaj|checklist/.test(s)){ topic('podklady'); return; }
+    botMsg('Túto konkrétnu vec nemám v prehľade, ale rád vás nasmerujem. Skúste iné slovo, prejdite si témy, alebo pošlite dopyt a ozve sa vám projektant.');
+    setTimeout(()=>chipRow([
+      {t:'Prehľadať témy a otázky',ic:I.book,primary:true,fn:flowKB},
+      {t:'Zistiť, čo potrebujem',ic:I.search,fn:flowNeed},
+      {t:'Poslať dopyt',ic:I.send,fn:flowLead}
+    ]),200);
   });
 }
 input.addEventListener('keydown',e=>{if(e.key==='Enter')aiUserSend();});
 
+/* ——— animovaný placeholder v inpute (jemný typewriter) ——— */
+const phPhrases=[
+  'Čo potrebujem k stavebnému povoleniu?',
+  'Viete mi vysvetliť postup pri komunikácii s úradom?',
+  'Aké podklady si mám pripraviť?',
+  'Dá sa objednať konzultácia?'
+];
+let phI=0,phChar=0,phDir=1;
+function phTick(){
+  if(document.activeElement===input || input.value){ input.placeholder='Napíšte správu…'; return setTimeout(phTick,1000); }
+  const full=phPhrases[phI];
+  phChar+=phDir;
+  input.placeholder=full.slice(0,Math.max(0,phChar))+(phChar<full.length&&phChar>0?'│':'');
+  if(phChar>=full.length){ phDir=-1; return setTimeout(phTick,1800); }
+  if(phChar<=0){ phDir=1; phI=(phI+1)%phPhrases.length; return setTimeout(phTick,360); }
+  setTimeout(phTick, phDir>0?52:26);
+}
+setTimeout(phTick,1500);
+
 /* ——— teaser po krátkej chvíli ——— */
-setTimeout(()=>{if(!started)document.getElementById('ai-teaser').classList.add('show');},2600);
+setTimeout(aiTeaserShow,2600);
 </script>
 </body>
 </html>

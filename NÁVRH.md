@@ -5,6 +5,42 @@
 > aby ukážka pôsobila ako reálna funkcia. Kalendár, e-maily ani dopyt sa reálne
 > neodosielajú.
 
+> **Verzia 3 — profesionálne dotiahnutie a reálny dojem:**
+> - Zo stránky aj asistenta **odstránené upozornenia** typu „demo režim",
+>   „kalendár je fejkový", „žiadne dáta sa neodosielajú". Na stránke ostal len
+>   krátky, nenápadný popisok, čo asistent ukazuje. Pôsobí ako reálne riešenie.
+> - **Logo:** brandový chevron „A" + „i" s **jasne viditeľnou bodkou** — čistejšie
+>   a prémiovejšie. V hlavičke stav **„Asistent je online"**.
+> - **Úvod = akčné čipy ako hlavná funkcia.** Prominentná karta „Potrebujem
+>   konzultáciu" hneď pod úvodom + akčné riadky: *Úradné postupy* (Stavebné
+>   povolenie, Ohlásenie, Kolaudácia, Zmena/prístavba — každé s **postupom krok za
+>   krokom**: čo pripraviť, kam ísť, čo sa podáva, prílohy, čo pripraví Aplan),
+>   *Komunikácia s úradom* (zásady + vzor správy + reakcia na výzvu),
+>   *Aké podklady potrebujem?*, *Mám pozemok/stavbu — čo ďalej?*,
+>   *Preveďte ma tým, čo robíte*.
+> - **Kalendár** zjednodušený a bez emoji: typ stretnutia → dátum/čas → údaje.
+> - **Spodná lišta**: iba rýchle kontakty (Zavolať, E-mail, WhatsApp) kompaktne pod
+>   inputom, ako reálne `tel:`/`mailto:`/`wa.me` odkazy. Kalendár už nie je dole.
+> - **Input** má jemný animovaný placeholder (postupne sa píšu a mažú návrhy otázok).
+> - Väčší, prehľadnejší panel na desktope; na mobile bez rozbíjania.
+>
+> **Verzia 2 — úprava na jednoduchý, profesionálny a dôveryhodný tón:**
+> - **Logo podľa reálnej značky** — Aplan používa minimalistický bronzový „chevron"
+>   (písmeno A bez priečky). Ikonku asistenta tvorí presne tento brandový tvar
+>   doplnený o tenké „I" → prirodzená „AI" verzia loga, nie nové náhodné logo.
+>   Farby naladené na reálny brandový bronz/taupe (žiadne krikľavé tóny).
+> - **Rotujúci zatvárateľný popisok** pri bubline (3 vety o pomoci s úradným
+>   vybavovaním, s malým „×").
+> - **Čisté okno**: jednoduchý header, názov, zatváracie tlačidlo, decentné logo,
+>   bez zbytočných efektov a preplnenia. Pokojnejší launcher (bez „hračkárskeho"
+>   pulzovania).
+> - **Úvodné čipy v sekciách** (kompaktný 2-stĺpcový grid): *Úradné postupy*,
+>   *Dokumenty a komunikácia*, *Nie ste si istí?* — namiesto dlhého zoznamu tlačidiel.
+> - **Krokové vedenie**: po kliknutí na tému asistent najprv krátko vysvetlí, o čo
+>   ide, ponúkne konkrétnejšie čipy a až potom zobrazí jasný postup (kde to riešiť,
+>   čo pripraviť, čo napísať). Žiadne veľké bloky textu naraz.
+> - **Rezervácia konzultácie** ako samostatná karta pod čipmi (nie hlavný čip).
+
 ---
 
 ## 1) Hlavná myšlienka asistenta
@@ -45,6 +81,36 @@ povolenie", „garantujeme schválenie", „toto určite stačí", „úrad to m
 
 Funkcie sa **prelínajú** — napr. po sprievodcovi „Zistiť, čo potrebujem" asistent
 ponúkne checklist, správu na úrad, balík aj rezerváciu.
+
+---
+
+## 2b) Vedomostná báza — čo všetko klient nájde
+
+Asistent obsahuje **prehľadávateľnú vedomostnú bázu** (~38 tém v 5 oblastiach).
+Klient ju nájde troma spôsobmi: **napíše do poľa** (napr. „prístavba",
+„kolaudácia", „územný plán", „cena"), **prejde si oblasti** cez „Témy a otázky",
+alebo cez **súvisiace témy** pod každou odpoveďou (krížové prepojenia). Každá téma
+je krátko a zrozumiteľne vysvetlená a vždy ponúka ďalší krok (checklist, správa na
+úrad, kalendár, balík, dopyt).
+
+- **Služby a typy projektov:** rodinný dom (novostavba), rekonštrukcia, prístavba
+  a nadstavba, drobné stavby (garáž/altánok/prístrešok/plot/bazén), dodatočná
+  legalizácia, zmena účelu užívania, architektonická štúdia, stupne dokumentácie,
+  profesie, energetika, prípojky, interiér, typový vs. individuálny projekt.
+- **Postupy krok za krokom:** ako začať od nuly, pred kúpou pozemku, stavebné
+  povolenie, ohlásenie, rekonštrukcia, legalizácia, kolaudácia.
+- **Pojmy a skratky (glosár):** územný plán a regulatívy, index zastavanosti a
+  koeficient zelene, odstupové vzdialenosti, list vlastníctva, katastrálna mapa a
+  parcelné číslo, územnoplánovacia informácia, povolenie vs. ohlásenie, dotknuté
+  orgány, DÚR/DSP/DRS, stavebný dozor.
+- **Časté otázky:** ako dlho trvá projekt, koľko stojí, čo obsahuje, stavba
+  svojpomocou, „vybavíte mi úrady?" (jasná hranica role Aplanu), aké podklady
+  treba, kde pôsobíte, zmeny počas projektu.
+- **Dokumenty a checklisty:** interaktívny odškrtávací zoznam podľa typu prípadu.
+
+Báza je v `index.html` jedno dátové pole (`KB`) — **ľahko spravovateľná a
+rozšíriteľná**, pripravená na neskoršie napojenie na reálne AI odpovede nad
+obsahom webu Aplan.
 
 ---
 
