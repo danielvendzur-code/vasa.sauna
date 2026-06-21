@@ -171,6 +171,12 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .resv .rg svg{width:16px;height:16px;color:var(--muted-2)}
 .aplan-note{margin-top:8px;border-left:2px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:9px 12px;font:600 12px/1.5 var(--font);color:var(--ink-3)}
 .aplan-note b{color:var(--ink)}
+.gdpr{display:flex;align-items:flex-start;gap:8px;margin:9px 0 2px;cursor:pointer}
+.gdpr input{margin-top:1px;accent-color:var(--accent);flex:0 0 auto;width:15px;height:15px;cursor:pointer}
+.gdpr span{font:600 10.5px/1.45 var(--font);color:var(--muted)}
+.gdpr a{color:var(--accent-2);font-weight:700}
+.confirm-send{display:inline-block;margin-top:11px;background:var(--ink);color:#fff;text-decoration:none;border-radius:11px;padding:10px 16px;font:800 13px var(--font);transition:color .18s}
+.confirm-send:hover{color:var(--accent)}
 
 /* karty / panely vnútri správy */
 .panel{margin-top:10px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper)}
@@ -351,6 +357,18 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
    Sprevádza klienta úradnými postupmi, dokumentmi a
    komunikáciou s úradom a umožňuje rezerváciu konzultácie.
    ========================================================= */
+
+/* === KONFIGURÁCIA — jediné miesto na vyplnenie údajov firmy === */
+const CFG = {
+  firma:      'Aplan',
+  telefon:    '+421 911 123 456',   // zobrazený formát
+  telefonRaw: '+421911123456',      // pre tel: (bez medzier)
+  whatsapp:   '421911123456',       // pre wa.me (medzinárodné číslo bez +)
+  email:      'info@aplan.sk',
+  web:        'https://www.aplan.sk',
+  gdprUrl:    'https://www.aplan.sk/ochrana-osobnych-udajov',
+  hodiny:     'Po–Pia 8:00–16:00'
+};
 
 /* ——— Logo: chevron „A" z reálneho loga Aplan + „i" s bodkou => „AI" verzia značky ——— */
 function mono(){
@@ -596,9 +614,9 @@ function footResv(){ userMsg('Rezervovať konzultáciu'); typing(flowCalendar); 
 function renderFoot(){
   const f=document.getElementById('ai-foot');
   const acts=[
-    {t:'Zavolať',svg:I.phone,href:'tel:+421911123456'},
-    {t:'E-mail',svg:I.mail,href:'mailto:info@aplan.sk'},
-    {t:'WhatsApp',svg:I.wa,href:'https://wa.me/421911123456'}
+    {t:'Zavolať',svg:I.phone,href:'tel:'+CFG.telefonRaw},
+    {t:'E-mail',svg:I.mail,href:'mailto:'+CFG.email},
+    {t:'WhatsApp',svg:I.wa,href:'https://wa.me/'+CFG.whatsapp}
   ];
   const resv=el(`<button class="foot-resv">${I.cal}<span>Rezervovať konzultáciu</span></button>`);
   resv.onclick=footResv;
@@ -811,6 +829,8 @@ function pkgForm(){
   };
 }
 function val(scope,f){const e=scope.querySelector(`[data-f="${f}"]`);return e?e.value.trim():'';}
+function gdprField(){return `<label class="gdpr"><input type="checkbox" data-f="gdpr"><span>Súhlasím so spracovaním osobných údajov za účelom spracovania dopytu. <a href="${CFG.gdprUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Viac</a></span></label>`;}
+function mailLink(subject,lines){return `mailto:${CFG.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.filter(x=>x!==undefined&&x!==null).join('\n'))}`;}
 function pkgResult(){
   const O=pkg.obec||'[OBEC]', P=pkg.parc||'[PARCELA]', M=pkg.meno||'[MENO]';
   const mailObec=`Dobrý deň,\n\nchcel by som si overiť možnosti výstavby na pozemku v obci ${O}, parcelné číslo ${P}. Prosím o informáciu, či je pozemok podľa územného plánu určený na výstavbu a aké základné regulatívy sa naň vzťahujú (odstupy, zastavanosť, výška, tvar strechy, napojenie na siete).\n\nĎakujem.\nS pozdravom,\n${M}`;
@@ -912,14 +932,23 @@ function calContact(){
     <div class="field"><label>E-mail</label><input data-f="em" placeholder="vas@email.sk"></div>
     <div class="field"><label>Obec / lokalita stavby</label><input data-f="obec" placeholder="napr. Stupava"></div>
     <div class="field"><label>Stručný popis zámeru</label><textarea data-f="popis" placeholder="Pár viet o tom, čo riešite…"></textarea></div>
+    ${gdprField()}
     <button class="btn-go">Rezervovať termín</button></div>`);
   const p=m.querySelector('[data-calc]');
   p.querySelector('.btn-go').onclick=()=>{
-    booking.meno=val(p,'meno');
+    booking.meno=val(p,'meno');const tel=val(p,'tel'),em=val(p,'em');
+    if(!booking.meno||!tel){ botMsg('Prosím vyplňte meno a telefón.'); return; }
+    if(!p.querySelector('[data-f="gdpr"]').checked){ botMsg('Prosím potvrďte súhlas so spracovaním osobných údajov.'); return; }
+    const lines=['Rezervácia konzultácie — '+CFG.firma,'',
+      'Typ stretnutia: '+booking.type,'Termín: '+booking.day+' o '+booking.time,
+      'Meno: '+booking.meno,'Telefón: '+tel,'E-mail: '+em,
+      'Lokalita stavby: '+val(p,'obec'),'','Popis zámeru:','  '+val(p,'popis')];
+    const link=mailLink('Rezervácia konzultácie — '+CFG.firma, lines);
     typing(()=>{
       botMsg(`<div class="confirm"><div class="ci">Termín je rezervovaný</div>
         <div class="cb"><b>${esc(booking.type)}</b><br>${esc(booking.day)} · ${esc(booking.time)}${booking.meno?('<br>na meno '+esc(booking.meno)):''}<br><br>
-        Ozveme sa vám na potvrdenie a prípadné doplnenie podkladov. Tešíme sa na vás.</div></div>`);
+        Potvrďte odoslaním e-mailom — ozveme sa vám.</div>
+        <a class="confirm-send" href="${link}">Potvrdiť termín e-mailom</a></div>`);
       backMenu();
     },1000);
   };
@@ -976,14 +1005,28 @@ function flowLead(){
     <div class="field"><label>Krátky popis zámeru</label><textarea data-f="popis" placeholder="Čo plánujete…"></textarea></div>
     <div class="field"><label>Prílohy (foto, LV, kataster)</label>
       <div style="border:1.5px dashed var(--line-2);border-radius:11px;padding:13px;text-align:center;font:600 12px var(--font);color:var(--muted);cursor:pointer" onclick="botMsg('Súbory sa pripoja k vášmu dopytu — môžete ich priložiť aj neskôr e-mailom.')">Priložiť súbory (foto, list vlastníctva, kataster)</div></div>
+    ${gdprField()}
     <button class="btn-go">Pripraviť a odoslať dopyt</button></div></div>`);
   const p=m.querySelector('[data-lead]');
-  p.querySelector('.btn-go').onclick=()=>typing(()=>{
-    const meno=val(p,'meno');
-    botMsg(`<div class="confirm"><div class="ci">Ďakujeme${meno?', '+esc(meno):''}!</div>
-      <div class="cb">Dopyt sme prijali. Na základe údajov vás nasmerujeme a pripravíme prvotnú konzultáciu — čoskoro sa vám ozveme.</div></div>`);
-    backMenu();
-  },1000);
+  p.querySelector('.btn-go').onclick=()=>{
+    const meno=val(p,'meno'),tel=val(p,'tel'),em=val(p,'em');
+    if(!meno||!tel||!em){ botMsg('Prosím vyplňte meno, telefón a e-mail (povinné polia).'); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ botMsg('Prosím zadajte platný e-mail.'); return; }
+    if(!p.querySelector('[data-f="gdpr"]').checked){ botMsg('Prosím potvrďte súhlas so spracovaním osobných údajov.'); return; }
+    const lines=['Nový dopyt z webu — '+CFG.firma,'',
+      'Meno: '+meno,'Telefón: '+tel,'E-mail: '+em,
+      'Lokalita stavby: '+val(p,'lok'),'Typ projektu: '+val(p,'typ'),'Pozemok: '+val(p,'poz'),
+      'Parcelné číslo: '+val(p,'parc'),'Komunikácia s úradom: '+val(p,'urad'),
+      'Časový plán: '+val(p,'cas'),'Stará dokumentácia: '+val(p,'dok'),'',
+      'Popis zámeru:','  '+val(p,'popis')];
+    const link=mailLink('Dopyt z webu — '+CFG.firma, lines);
+    typing(()=>{
+      botMsg(`<div class="confirm"><div class="ci">Ďakujeme, ${esc(meno)}!</div>
+        <div class="cb">Dopyt je pripravený. Kliknutím nižšie ho odošlete e-mailom — ozveme sa vám čo najskôr.</div>
+        <a class="confirm-send" href="${link}">Odoslať dopyt e-mailom</a></div>`);
+      backMenu();
+    },900);
+  };
 }
 
 /* =========================================================
