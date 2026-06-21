@@ -1238,7 +1238,7 @@ function aiUserSend(){
     if(/správ|sprav|napís|napis|e-?mail.*úrad|list úradu/.test(s)){ flowLetter(); return; }
     if(/dopyt|kontakt|ozvite|zavolaj/.test(s)){ flowLead(); return; }
     if(/balík|balik|štartov|startov/.test(s)){ flowPackage(); return; }
-    if(/chýbaj|chybaj|checklist/.test(s)){ topic('dok'); return; }
+    if(/chýbaj|chybaj|checklist/.test(s)){ topic('podklady'); return; }
     botMsg('Túto konkrétnu vec nemám v prehľade, ale rád vás nasmerujem. Skúste iné slovo, prejdite si témy, alebo pošlite dopyt a ozve sa vám projektant.');
     setTimeout(()=>chipRow([
       {t:'Prehľadať témy a otázky',ic:I.book,primary:true,fn:flowKB},
