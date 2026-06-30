@@ -30,11 +30,12 @@
   --shadow-sm:0 12px 34px rgba(22,24,28,.12);
   --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --r:18px;
+  --ai-vh:100dvh;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
-body.ai-locked{overflow:hidden;position:fixed;width:100%}
+body.ai-locked{overflow:hidden;position:fixed;width:100%;left:0;right:0}
 
 /* ============ DEMO PODKLADOVÁ STRÁNKA (mock Aplan) ============ */
 .demo-ribbon{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--soft);color:var(--muted);font:600 11.5px/1.4 var(--font);letter-spacing:.01em;text-align:center;padding:7px 14px;border-bottom:1px solid var(--line)}
@@ -87,7 +88,7 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 #ai-launch .mono{width:34px;height:34px}
 
 /* ============ CHAT PANEL ============ */
-#ai-panel{position:fixed;right:20px;bottom:20px;z-index:99999;width:444px;height:min(764px,calc(100dvh - 40px));background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(20px) scale(.96);transform-origin:bottom right;transition:opacity .22s,transform .34s cubic-bezier(.2,1.2,.2,1)}
+#ai-panel{position:fixed;right:20px;bottom:20px;z-index:99999;width:444px;height:min(764px,calc(var(--ai-vh) - 40px));background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(20px) scale(.96);transform-origin:bottom right;transition:opacity .22s,transform .34s cubic-bezier(.2,1.2,.2,1)}
 #ai-panel.open{opacity:1;pointer-events:auto;transform:none}
 
 .ai-head{position:relative;display:flex;align-items:center;gap:13px;padding:16px 16px;background:var(--ink);color:#fff}
@@ -103,7 +104,7 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .hbtn:hover{background:rgba(255,255,255,.2);color:#fff}
 .hbtn svg{width:17px;height:17px}
 
-.ai-body{flex:1;overflow-y:auto;padding:18px 16px 8px;background:linear-gradient(180deg,var(--soft-2),var(--paper));scroll-behavior:smooth}
+.ai-body{flex:1;overflow-y:auto;padding:18px 16px 8px;background:linear-gradient(180deg,var(--soft-2),var(--paper));scroll-behavior:smooth;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .ai-body::-webkit-scrollbar{width:7px}
 .ai-body::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:10px}
 
@@ -297,10 +298,6 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 /* rýchle kontakty — kompaktná lišta pod inputom */
 /* sticky pätička */
 .ai-foot{padding:0 12px 12px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
-.foot-resv{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:0;border-radius:13px;background:var(--ink);color:#fff;padding:13px;font:800 14px var(--font);cursor:pointer;transition:background .18s}
-.foot-resv:hover{background:var(--ink);color:var(--accent)}
-.foot-resv svg{width:18px;height:18px;color:#fff;stroke:#fff}
-.foot-resv:hover svg{color:var(--accent);stroke:var(--accent)}
 .ai-contacts{display:flex;gap:8px}
 .qa{flex:1;justify-content:center;border:1px solid var(--line-2);background:var(--soft-2);border-radius:11px;padding:11px 8px;font:700 13px var(--font);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;transition:all .15s}
 .qa:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
@@ -317,10 +314,11 @@ body.ai-locked{overflow:hidden;position:fixed;width:100%}
 .disclaim{font:600 9.5px/1.3 var(--font);color:var(--muted-2);text-align:center;padding:0 14px 9px;background:var(--paper)}
 
 @media(max-width:520px){
-  #ai-panel{right:0;bottom:0;width:100%;height:100dvh;border-radius:0}
+  #ai-panel{right:0;bottom:0;width:100%;height:var(--ai-vh);max-height:var(--ai-vh);border-radius:0}
   #ai-launch{right:16px;bottom:16px}
   #ai-teaser{right:16px;left:16px;max-width:none;bottom:92px}
   .msg .mb{max-width:88%}
+  .ai-compose input{font-size:16px}
 }
 </style>
 </head>
@@ -413,6 +411,19 @@ document.getElementById('brandmono').innerHTML = mono('#16181C');
 const body  = document.getElementById('ai-body');
 const input = document.getElementById('ai-input');
 let started = false;
+let savedScrollY = 0;
+
+function isMobileChat(){return window.matchMedia('(max-width:520px)').matches;}
+function updateAiViewportHeight(){
+  const h=(window.visualViewport&&window.visualViewport.height)||window.innerHeight;
+  document.documentElement.style.setProperty('--ai-vh',h+'px');
+}
+updateAiViewportHeight();
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',updateAiViewportHeight);
+  window.visualViewport.addEventListener('scroll',updateAiViewportHeight);
+}
+window.addEventListener('resize',updateAiViewportHeight);
 
 /* ——— ikonky ——— */
 const I = {
@@ -482,6 +493,7 @@ body.addEventListener('click',function(e){
   const x=h.querySelector('.stp-x'); if(x) x.textContent=open?'–':'+';
 });
 function chipRow(list){
+  body.querySelectorAll('.chips').forEach(x=>x.remove());
   const row=el('<div class="chips"></div>');
   list.forEach(c=>{
     const b=el(`<button class="chip ${c.primary?'primary':''}">${c.ic||''}${esc(c.t)}</button>`);
@@ -499,10 +511,15 @@ function esc(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','
 
 /* ——— otvorenie / zatvorenie ——— */
 function aiOpen(){
+  updateAiViewportHeight();
   document.getElementById('ai-panel').classList.add('open');
   document.getElementById('ai-launch').classList.add('open');
   aiTeaserClose();
-  if(window.matchMedia('(max-width:520px)').matches) document.body.classList.add('ai-locked');
+  if(isMobileChat()&&!document.body.classList.contains('ai-locked')){
+    savedScrollY=window.scrollY||document.documentElement.scrollTop||0;
+    document.body.style.top=`-${savedScrollY}px`;
+    document.body.classList.add('ai-locked');
+  }
   if(!started){ started=true; if(!restoreConvo()) welcome(); }
 }
 const teaserPhrases=[
@@ -528,22 +545,25 @@ function aiTeaserClose(){
 function aiClose(){
   document.getElementById('ai-panel').classList.remove('open');
   document.getElementById('ai-launch').classList.remove('open');
+  const wasLocked=document.body.classList.contains('ai-locked');
   document.body.classList.remove('ai-locked');
+  document.body.style.top='';
+  if(wasLocked) window.scrollTo(0,savedScrollY);
 }
 
 /* ——— úvod: bez uvítacej správy, rovno akčné chipy (návod je v inpute) ——— */
 function welcome(){ renderMenu(); }
-function menu(){ body.querySelectorAll('.menu').forEach(x=>x.remove()); renderMenu(); }
+function menu(){ body.querySelectorAll('.menu,.chips').forEach(x=>x.remove()); renderMenu(); }
 function aiHome(){ menu(); }
 function renderMenu(){
   const wrap=el('<div class="menu"></div>');
   const card=el('<div class="menu-card"></div>');
   const rows=[
+    ['Neviem, čo potrebujem','Sprievodca zámerom a ďalším postupom',I.search,'need'],
     ['Úradné postupy','Stavebné povolenie, ohlásenie, kolaudácia, prístavba',I.steps,'uradne'],
     ['Komunikácia s úradom','Čo a ako napísať, ako reagovať na výzvu úradu',I.mail,'kom'],
     ['Aké podklady potrebujem?','Prehľadný checklist dokumentov',I.list,'podklady'],
-    ['Čo robí Aplan','V skratke, ako vám vieme pomôcť',I.info,'about'],
-    ['Pojmy, skratky a vysvetlenia','Služby, postupy a časté otázky',I.book,'kb']
+    ['Čo robí Aplan','V skratke, ako vám vieme pomôcť',I.info,'about']
   ];
   rows.forEach(it=>{
     const b=el(`<button class="mrow"><span class="mi">${it[2]}</span><div class="mt2"><b>${it[0]}</b><span>${it[1]}</span></div><svg class="mchev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>`);
@@ -617,6 +637,7 @@ const C_PISAT={t:'Čo napísať na úrad?',ic:I.mail,fn:()=>flowLetter()};
 function topic(id){ (TT[id]||menu)(); }
 
 const TT={
+  need(){ flowNeed(); },
   /* Úradné postupy — rozcestník */
   uradne(){
     botMsg('<b>Úradné postupy.</b> Vyberte, čo riešite — rozpíšem vám jasný postup krok za krokom: čo pripraviť, na ktorý úrad ísť, čo sa podáva a aké sú prílohy.');
@@ -676,8 +697,7 @@ const TT={
   kb(){ flowKB(); }
 };
 
-/* ——— sticky pätička: rezervácia + rýchle kontakty ——— */
-function footResv(){ userMsg('Rezervovať konzultáciu'); typing(flowCalendar); }
+/* ——— sticky pätička: rýchle kontakty ——— */
 function renderFoot(){
   const f=document.getElementById('ai-foot');
   const acts=[
@@ -685,11 +705,9 @@ function renderFoot(){
     {t:'E-mail',svg:I.mail,href:'mailto:'+CFG.email},
     {t:'WhatsApp',svg:I.wa,href:'https://wa.me/'+CFG.whatsapp}
   ];
-  const resv=el(`<button class="foot-resv">${I.cal}<span>Rezervovať konzultáciu</span></button>`);
-  resv.onclick=footResv;
   const row=el('<div class="ai-contacts"></div>');
   acts.forEach(a=>row.appendChild(el(`<a class="qa" href="${a.href}" target="_blank" rel="noopener">${a.svg}<span>${a.t}</span></a>`)));
-  f.innerHTML=''; f.appendChild(resv); f.appendChild(row);
+  f.innerHTML=''; f.appendChild(row);
 }
 renderFoot();
 
@@ -954,7 +972,7 @@ function miniList(items){return '<ul style="margin:0">'+items.map(i=>`<li style=
 const booking={};
 function flowCalendar(){
   if(CFG.calendly){
-    botMsg('Otváram rezervačný kalendár v novom okne…<span class="mini">Ak sa neotvoril, povoľte vyskakovacie okná alebo nás kontaktujte priamo.</span>');
+    botMsg(`Otváram rezervačný kalendár. Termín bude potvrdený až v Calendly.<span class="mini">Ak sa kalendár neotvoril, povoľte vyskakovacie okná alebo použite <a href="${esc(CFG.calendly)}" target="_blank" rel="noopener">tento odkaz</a>.</span>`);
     try{ window.open(CFG.calendly,'_blank','noopener'); }catch(e){}
     backMenu(); return;
   }
@@ -1035,9 +1053,9 @@ function calContact(){
     try{
       await sendLead(data);
       m.remove();
-      botMsg(`<div class="confirm"><div class="ci">Termín je rezervovaný</div>
+      botMsg(`<div class="confirm"><div class="ci">Žiadosť o konzultáciu bola odoslaná</div>
         <div class="cb"><b>${esc(booking.type)}</b><br>${esc(booking.day)} · ${esc(booking.time)}${booking.meno?('<br>na meno '+esc(booking.meno)):''}<br><br>
-        Ozveme sa vám na potvrdenie. Tešíme sa na vás.</div></div>`);
+        Termín bude potvrdený až po dohode. Ozveme sa vám na potvrdenie.</div></div>`);
       backMenu();
     }catch(err){
       btn.disabled=false; btn.dataset.busy=''; btn.textContent=lbl;
@@ -1252,7 +1270,7 @@ const KB=[
  body:'Pri mnohých rodinných domoch je stavba svojpomocou možná, no zvyčajne sa vyžaduje stavebný dozor. Projekt a podklady pripravíme tak, aby ste mali jasné zadanie.<span class="mini">Podmienky závisia od konkrétnej stavby a úradu.</span>',
  rel:['topic:dozor','act:cal']},
 {id:'urady',cat:'faq',title:'Vybavíte mi úrady a povolenie?',tags:'vybavíte úrady povolenie za mňa inžiniering zastúpenie na úrade',
- body:'Aplan je <b>projektová kancelária</b> — pripravíme projektovú dokumentáciu a odborné podklady a vysvetlíme postup. Komunikáciu a podania na úrade si vediete vy (alebo podľa dohody s odborníkom).<span class="mini">Asistent vám k tomu pripraví texty a checklisty.</span>',
+ body:'Aplan pripraví projektovú dokumentáciu, odborné podklady a poradí s postupom. Podanie a komunikáciu s úradom rieši klient, ak nie je dohodnuté inak.<span class="mini">Asistent vám k tomu pripraví texty a checklisty.</span>',
  rel:['act:letter','act:steps','act:checklist']},
 {id:'podklady',cat:'faq',title:'Aké podklady od vás potrebujem?',tags:'aké podklady potrebujem čo mám priniesť dokumenty od klienta',
  body:'Najčastejšie: list vlastníctva, katastrálnu mapu / parcelné číslo, informáciu z obce, fotky pozemku alebo stavby, prípadne pôvodnú dokumentáciu a predstavu o dispozícii.<span class="mini">Presný zoznam vám pripraví checklist podľa typu prípadu.</span>',
@@ -1324,6 +1342,7 @@ let aiHistory=[];
 function aiUserSend(){
   const t=input.value.trim(); if(!t)return;
   input.value='';userMsg(t);
+  if(isMobileChat()) input.blur();
   if(CFG.chatEndpoint){ aiReply(t); } else { legacyAnswer(t); }
 }
 async function aiReply(t){
